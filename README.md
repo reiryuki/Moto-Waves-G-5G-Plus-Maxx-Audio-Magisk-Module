@@ -1,5 +1,7 @@
 # Motorola-Waves-Maxx-Audio-FX-Magisk-Module
 
+Ported from nairo for all Android Pie and up devices
+
 Install ACDB Module too
 https://t.me/redmi4aINT/1154066
 
