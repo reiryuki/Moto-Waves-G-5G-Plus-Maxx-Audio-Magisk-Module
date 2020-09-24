@@ -1,0 +1,1 @@
+# Motorola-Waves-Maxx-Audio-FX-Magisk-Module
