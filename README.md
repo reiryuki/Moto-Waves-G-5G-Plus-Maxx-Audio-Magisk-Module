@@ -1,8 +1,8 @@
-## Motorola Waves Maxx Audio FX Magisk-Module
+# Motorola Waves Maxx Audio FX Magisk-Module
 
 Ported from Moto G 5G Plus (nairo) for all Android Pie and up arm and arm64 devices
 
-# Guide
+## Guide
 Install the module via Magisk Manager only
 
 Install ACDB Module too
@@ -13,7 +13,7 @@ but in "skip notification helper remover" please choose "yes"! If choose no, it 
 
 Reboot
 
-# Attention!
+## Attention!
 Do not install Audio Modification Library Module, because it will conflict with ACDB Module!
 
 Download link bellow
