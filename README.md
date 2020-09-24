@@ -1,6 +1,7 @@
 ## Motorola Waves Maxx Audio FX Magisk Module
 
 Ported from Moto G 5G Plus (nairo) for all Android Pie and up arm and arm64 devices
+[Screenshots](https://reiryuki.blogspot.com/2020/09/motorola-waves-maxx-audio-fx-magisk.html?m=1)
 
 ### Guide
 Install the module via Magisk Manager only
