@@ -9,7 +9,7 @@ Install the module via Magisk Manager only
 Install ACDB Module too
 https://t.me/redmi4aINT/1154066
 
-Install Audio Compatibility Patch Module too at Magisk Download
+Install Audio Compatibility Patch Module too at Magisk Download for processing all audio sessions
 but in "skip notification helper remover" please choose "yes". If choose no, it will conflict with ACDB Module.
 
 Reboot
@@ -19,4 +19,7 @@ Do not install Audio Modification Library Module, because it will conflict with 
 
 Please open issues with logcat.txt and screenshots if you got problems.
 
-### Download link bellow
+Thanks to @guitardedhero for scripts and all people that helped.
+
+### Download
+Link bellow at "releases".
