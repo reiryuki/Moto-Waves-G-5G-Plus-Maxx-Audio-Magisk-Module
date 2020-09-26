@@ -21,7 +21,7 @@ Do not install Audio Modification Library Module, because it will conflict with 
 
 Please open issues with logcat.txt and screenshots if you got problems.
 
-Thanks to @guitardedhero for scripts and all people that helped.
+Special thanks to all people that helped and tested my modules! 🙏🙏🙏
 
 ### Download
 Link bellow at "releases".
