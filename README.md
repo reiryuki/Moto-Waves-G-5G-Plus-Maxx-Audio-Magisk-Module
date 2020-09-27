@@ -6,7 +6,7 @@ Ported from Moto G 5G Plus (nairo) https://git.rip/dumps/motorola/nairo for all 
 ### Guide
 Install the module via Magisk Manager only
 
-This module can be stand alone module but still support [ACDB module](t.me/viperatmos).
+This module can be stand alone module but still support [ACDB module](https://t.me/viperatmos).
 
 You can install Audio Compatibility Patch Module too at Magisk Download for processing all audio sessions,
 but in "skip notification helper remover" please choose "yes", don't choose no, or this module will be not working properly.
