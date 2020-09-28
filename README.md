@@ -24,5 +24,7 @@ Special thanks to @guitardedhero, @foxtrot47, and all people that helped and tes
 
 Please give a credit @reiryuki if you want to cheat my works.
 
+If you are using Moto Camera One and the app crash, then delete /data/adb/modules/MotoWaves/system/framework/com.motorola.frameworks.core.addon.jar file and reboot.
+
 ### Download
 Link bellow at "releases".
