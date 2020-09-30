@@ -18,7 +18,7 @@ Open Moto Audio app using equalizer option in your Music app and tap 'Show icon 
 ### Attention!
 Don't instal Audio Modification Library module, or this module will be not working properly.
 
-Please open issues with logcat.txt and screenshots if you got problems.
+Please open issues with logcat if you got problems. Don't report anything without logcat!
 
 Special thanks to @guitardedhero, @foxtrot47, and all people that helped and tested my modules.
 
