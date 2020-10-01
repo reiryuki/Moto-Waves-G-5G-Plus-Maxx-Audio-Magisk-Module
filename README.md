@@ -1,9 +1,10 @@
-## Motorola Waves Maxx Audio Magisk Module
+# Motorola Waves Maxx Audio Magisk Module
 
+## Descriptions
 Ported from Moto G 5G Plus (nairo) https://git.rip/dumps/motorola/nairo for all Android Pie and up arm and arm64 devices
 [Screenshots](https://reiryuki.blogspot.com/2020/09/motorola-waves-maxx-audio-fx-magisk.html?m=1)
 
-### Guide
+## Guide
 Install the module via Magisk Manager only
 
 This module can be stand alone module but still support [ACDB module](https://t.me/viperatmos).
@@ -15,7 +16,7 @@ Reboot
 
 Open Moto Audio app using equalizer option in your Music app and tap 'Show icon in the app tray' for showing Moto Audio app icon launcher.
 
-### Attention!
+## Attention!
 Don't instal Audio Modification Library module, or this module will be not working properly.
 
 Please open issues with logcat if you got problems. Don't report anything without logcat!
@@ -24,5 +25,5 @@ Special thanks to @guitardedhero, @foxtrot47, and all people that helped and tes
 
 Please give a credit @reiryuki if you want to cheat my works.
 
-### Download
-Link bellow at "releases".
+## Download
+Link bellow at "Releases".
