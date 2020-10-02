@@ -15,9 +15,9 @@ but in "skip notification helper remover" please choose "yes", don't choose no, 
 - Reboot
 
 - Enable MotoSignatureApp in your apps settings. Or type these in Terminal Emulator app:
-`su`
-`setenforce 0`
-`pm enable com.motorola.motosignature.app`
+- `su`
+- `setenforce 0`
+- `pm enable com.motorola.motosignature.app`
 
 - Open Moto Audio app using equalizer option in your Music app and tap 'Show icon in the app tray' for showing Moto Audio app icon launcher.
 
