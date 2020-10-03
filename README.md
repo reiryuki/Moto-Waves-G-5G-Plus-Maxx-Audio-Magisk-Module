@@ -14,7 +14,7 @@ but in "skip notification helper remover" please choose "yes", don't choose no, 
 
 - Reboot
 
-- Type these in Terminal Emulator app:
+- For Android 10, type these in Terminal Emulator app:
 
 `su`
 
