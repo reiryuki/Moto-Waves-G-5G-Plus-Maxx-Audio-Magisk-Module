@@ -14,7 +14,7 @@ but in "skip notification helper remover" please choose "yes", don't choose no, 
 
 - Reboot
 
-- Enable MotoSignatureApp in your apps settings. Or type these in Terminal Emulator app:
+- Type these in Terminal Emulator app:
 
 `su`
 
