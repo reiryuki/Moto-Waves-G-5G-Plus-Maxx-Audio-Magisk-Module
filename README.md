@@ -25,6 +25,8 @@ but in "skip notification helper remover" please choose "yes", don't choose no, 
 - Open Moto Audio app using equalizer option in your Music app and tap 'Show icon in the app tray' for showing Moto Audio app icon launcher.
 
 ## Attention!
+Always make nandroid backup before install or updating version, since thiese are prerelese alpha versions!
+
 This module doesn't support Audio Modification Library module.
 
 Please open issues with logcat if you got problems. Don't report anything without logcat!
