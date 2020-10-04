@@ -27,6 +27,8 @@ but in "skip notification helper remover" please choose "yes", don't choose no, 
 ## Attention!
 Always make nandroid backup before install or updating version, since these are prerelese alpha versions!
 
+I only test this on my Redmi 4A rolex Android 10. Android 11 or other devices may not work.
+
 This module doesn't support Audio Modification Library module.
 
 Please open issues with logcat if you got problems. Don't report anything without logcat!
