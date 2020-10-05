@@ -7,14 +7,9 @@ An equalizer ported from Moto G 5G Plus (nairo) https://git.rip/dumps/motorola/n
 ## Guide
 - Install the module via Magisk Manager only
 
-- This module can be stand alone module but still support [ACDB module](https://t.me/viperatmos)
-
-- You can install Audio Compatibility Patch Module too at Magisk Download for processing all audio sessions,
-but in "skip notification helper remover" please choose "yes", don't choose no, or this module may not be working properly.
-
 - Reboot
 
-- For Android 10, type these in Terminal Emulator app:
+- Type these in Terminal Emulator app:
 
 `su`
 
@@ -29,7 +24,7 @@ Always make nandroid backup before install or updating version, since these are 
 
 I only test this on my Redmi 4A rolex Android 10. Android 11 or other devices may not work.
 
-This module doesn't support Audio Modification Library module.
+Now this module supports Audio Modification Library module, also [ACDB module](https://t.me/viperatmos), but still can be stand alone.
 
 Please open issues with logcat if you got problems. Don't report anything without logcat!
 
