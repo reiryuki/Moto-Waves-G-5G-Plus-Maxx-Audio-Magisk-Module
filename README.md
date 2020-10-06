@@ -20,7 +20,7 @@ An equalizer ported from Moto G 5G Plus (nairo) https://git.rip/dumps/motorola/n
 - Open Moto Audio app using equalizer option in your Music app and tap 'Show icon in the app tray' for showing Moto Audio app icon launcher.
 
 ## Attention!
-Always make nandroid backup before install or updating version, since these are experimental prerelese alpha versions!
+Always make nandroid backup before install or updating version, since these are experimental versions!
 
 I only test this on my Redmi 4A rolex Android 10. Android 11 or other devices may not work.
 
@@ -30,7 +30,7 @@ Please open issues with logcat if you got problems. Don't report anything withou
 
 Special thanks to @guitardedhero, @foxtrot47, and all people that helped and tested my modules.
 
-Please give a credit @reiryuki if you want to cheat my works.
+Please give a credit @reiryuki if you want to cheat/kang my works.
 
 ## Download
 Link bellow at "Releases".
