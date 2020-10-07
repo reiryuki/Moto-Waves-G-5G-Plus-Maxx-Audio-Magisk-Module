@@ -9,14 +9,6 @@ An equalizer ported from Moto G 5G Plus (nairo) https://git.rip/dumps/motorola/n
 
 - Reboot
 
-- Type these in Terminal Emulator app:
-
-`su`
-
-`setenforce 0`
-
-`pm enable com.motorola.motosignature.app`
-
 - Open Moto Audio app using equalizer option in your Music app and tap 'Show icon in the app tray' for showing Moto Audio app icon launcher.
 
 ## Attention!
