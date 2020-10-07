@@ -14,7 +14,7 @@ An equalizer ported from Moto G 5G Plus (nairo) https://git.rip/dumps/motorola/n
 ## Attention!
 Always make nandroid backup before install or updating version, since these are experimental versions!
 
-I only test this on my Redmi 4A rolex Android 10. Android 11 or other devices may not work.
+I only test this on my Redmi 4A rolex AOSP Android 10. Android 11 or other devices may not work.
 
 Now this module supports Audio Modification Library module, also [ACDB module](https://t.me/viperatmos), but still can be stand alone.
 
