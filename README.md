@@ -1,7 +1,7 @@
 # Moto Waves Maxx Audio FX Magisk Module
 
 ## Descriptions
-An equalizer ported from Motorola Moto G 5G Plus (nairo) https://git.rip/dumps/motorola/nairo for all Android Pie and up arm64 devices. (Not supported yet for arm).
+An equalizer ported from Motorola Moto G 5G Plus (nairo) https://git.rip/dumps/motorola/nairo for all Android Pie and up arm64-v8a devices. Now supported too for armeabi-v7a.
 [Screenshots](https://reiryuki.blogspot.com/2020/09/motorola-waves-maxx-audio-fx-magisk.html?m=1)
 
 ## Guide
