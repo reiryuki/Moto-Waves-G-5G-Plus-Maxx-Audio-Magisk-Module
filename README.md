@@ -32,7 +32,7 @@ An equalizer ported from Motorola Moto G 5G Plus (nairo) https://git.rip/dumps/m
 
 - Special thanks to @guitardedhero, @foxtrot47, and all people that helped and tested my modules.
 
-- You can cheat/kang my works, but please give a credit @reiryuki.
+- Free to cheat/kang my works, but please give a credit @reiryuki.
 
 ## Download
 - Link bellow at "Releases".
