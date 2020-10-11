@@ -17,8 +17,6 @@ An equalizer ported from Motorola Moto G 5G Plus (nairo) https://git.rip/dumps/m
 
 - If this module still not working properly, remove/disable your built-in soundfx or deactivate the library and effect through your audio_effects.xml and audio_effects.conf!
 
-- Reboot
-
 - Open Moto Audio app using equalizer option in your Music app and tap 'Show icon in the app tray' for showing Moto Audio app icon launcher.
 
 - Tap 'About' then tap multiple times there if you want to disable FX for loudspeaker.
