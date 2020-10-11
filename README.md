@@ -21,6 +21,10 @@ An equalizer ported from Motorola Moto G 5G Plus (nairo) https://git.rip/dumps/m
 
 - Open Moto Audio app using equalizer option in your Music app and tap 'Show icon in the app tray' for showing Moto Audio app icon launcher.
 
+- Tap 'About' then tap multiple times there if you want to disable FX for loudspeaker.
+
+- If sometime you installing Moto Camera One + feature support but it's crash, keep it installed, then reboot your device. It will working fine after reboot.
+
 ## Attention!
 - Always make nandroid backup before install or updating version, these are just experiments!
 
