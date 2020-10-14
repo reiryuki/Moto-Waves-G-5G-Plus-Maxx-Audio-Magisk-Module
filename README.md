@@ -11,7 +11,7 @@ An equalizer ported from [Motorola Moto G 5G Plus](https://git.rip/dumps/motorol
 
 - You can install Audio Compatibility Patch module for processing all audio outputs, but in skip notification helper remover, if you choose 'no', then you must use Audio Modification Library module to prevent conflicts. Sometimes, ACP causes cracking sounds.
 
-- Don't use this module with Moto Dolby!
+- Don't use this module with my Moto Dolby module!
 
 - Reboot
 
