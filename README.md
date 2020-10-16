@@ -4,10 +4,8 @@
 An equalizer ported from [Motorola Moto G 5G Plus](https://git.rip/dumps/motorola/nairo) (nairo) for any Android Pie and up arm64-v8a and armeabi-v7a devices.
 [Screenshots](https://reiryuki.blogspot.com/2020/09/motorola-waves-maxx-audio-fx-magisk.html?m=1).
 
-## Guide
+## Installation Guide
 - Install the module via Magisk Manager only.
-
-- This module supports Audio Modification Library module and [ACDB module](https://t.me/viperatmos) (choose one), but can be stand alone without it if you are not using multiple audio mods.
 
 - You can install Audio Compatibility Patch module for processing all audio outputs, but in skip notification helper remover, if you choose 'no', then you must use Audio Modification Library module to prevent conflicts. Sometimes, ACP causes cracking sounds.
 
@@ -22,6 +20,9 @@ An equalizer ported from [Motorola Moto G 5G Plus](https://git.rip/dumps/motorol
 - Tap 'About' then tap multiple times there if you want to disable FX for loudspeaker.
 
 - If sometime you installing Moto Camera One + feature support but it's crash, keep it installed, then reboot your device. It will working fine after reboot.
+
+## Optional
+- Install Audio Modification Library module or [ACDB module](https://t.me/viperatmos) (choose one, don't use both!) if you want to use multiple audio mods.
 
 ## Attention!
 - Always make nandroid backup before install or updating version, these are just experiments!
