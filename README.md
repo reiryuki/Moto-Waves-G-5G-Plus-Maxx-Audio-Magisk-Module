@@ -9,8 +9,6 @@ An equalizer ported from [Motorola Moto G 5G Plus](https://git.rip/dumps/motorol
 
 - You can install Audio Compatibility Patch module for processing all audio outputs, but in skip notification helper remover, if you choose 'no', then you must use Audio Modification Library module to prevent conflicts. Sometimes, ACP causes cracking sounds.
 
-- Don't use this module with my Moto Dolby module!
-
 - Reboot
 
 - If this module still not working properly, remove/disable your built-in soundfx or deactivate the library and effect through your audio_effects.xml and audio_effects.conf.
@@ -23,6 +21,8 @@ An equalizer ported from [Motorola Moto G 5G Plus](https://git.rip/dumps/motorol
 
 ## Optional
 - Install Audio Modification Library module or [ACDB module](https://t.me/viperatmos) (choose one, don't use both!) if you want to use multiple audio mods together with Dolby or Viper or any else.
+
+- Moto Waves v2.0 and up can be working together with Moto Dolby v1.2 and up. Use AML or ACDB for it.
 
 ## Attention!
 - Always make nandroid backup before install or updating version, these are just experiments!
