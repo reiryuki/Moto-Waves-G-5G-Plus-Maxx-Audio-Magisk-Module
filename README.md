@@ -9,7 +9,7 @@ An equalizer ported from [Motorola Moto G 5G Plus](https://git.rip/dumps/motorol
 
 - You can install Audio Compatibility Patch module for processing all audio outputs, but in skip notification helper remover, if you choose 'no', then you must use Audio Modification Library module to prevent conflicts. Sometimes, ACP causes cracking sounds.
 
-- Reboot
+- Reboot.
 
 - If this module still not working properly, remove/disable your built-in soundfx or deactivate the library and effect through your audio_effects.xml and audio_effects.conf.
 
