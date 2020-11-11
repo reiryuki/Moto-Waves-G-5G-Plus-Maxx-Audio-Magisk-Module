@@ -2,7 +2,7 @@
 
 ## Descriptions
 - An equalizer ported from [Motorola Moto G 5G Plus](https://git.rip/dumps/motorola/nairo) (nairo)
-- [Screenshots](https://reiryuki.blogspot.com/2020/09/motorola-waves-maxx-audio-fx-magisk.html?m=1).
+- [Screenshots](https://reiryuki.blogspot.com/2020/09/motorola-waves-maxx-audio-fx-magisk.html?m=1)
 
 ## Requirements
 - arm64 (for arm, use Moto Waves Edge.)
