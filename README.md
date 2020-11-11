@@ -5,7 +5,7 @@
 - [Screenshots](https://reiryuki.blogspot.com/2020/09/motorola-waves-maxx-audio-fx-magisk.html?m=1).
 
 ## Requirements
-- arm64 (For arm, use Moto Waves Edge.)
+- arm64 (for arm, use Moto Waves Edge.)
 - Android 9 or 10
 
 ## Installation Guide
@@ -24,7 +24,7 @@
 ## Attention!
 - Using together with Moto Dolby, will break waves.proc_twks.
 - Always make nandroid backup before install or updating version, these are just experiments!
-- Android 11 maybe working, maybe not, maybe bootloop.
+- Android 11 maybe working, maybe not.
 - Don't report anything without logcats!
 - Special thanks to all people that helped and tested my modules.
 
