@@ -5,7 +5,7 @@ An equalizer ported from [Motorola Moto G 5G Plus](https://git.rip/dumps/motorol
 [Screenshots](https://reiryuki.blogspot.com/2020/09/motorola-waves-maxx-audio-fx-magisk.html?m=1).
 
 ## Requirements
-- arm64 (For arm, use Moto Waves Edge)
+- arm64 (For arm, use Moto Waves Edge.)
 - Android 9 or 10
 
 ## Installation Guide
