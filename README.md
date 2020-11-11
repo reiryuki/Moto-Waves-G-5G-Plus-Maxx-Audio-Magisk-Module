@@ -10,12 +10,12 @@
 
 ## Installation Guide
 - Install the module via Magisk Manager only.
-- You can install Audio Compatibility Patch module for processing all audio outputs.
 - Reboot.
 - Open Moto Audio app using equalizer option in your Music app and tap 'Show icon in the app tray' for showing Moto Audio app icon launcher.
 - Tap 'About' then tap multiple times there if you want to disable FX for loudspeaker.
 
 ## Troubleshootings
+- Install Audio Compatibility Patch module for processing all audio outputs.
 - If sometime you installing Moto Camera One + feature support but it's crash, keep it installed, then reboot your device. It will be working fine after reboot.
 
 ## Optional
