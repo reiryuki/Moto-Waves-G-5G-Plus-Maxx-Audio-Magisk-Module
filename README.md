@@ -22,7 +22,6 @@
 - Install Audio Modification Library module or [ACDB module](https://t.me/viperatmos) (choose one, don't use both!) if you using multiple audio mods together with Dolby or Viper or any else.
 
 ## Attention!
-- Using together with Moto Dolby, will break waves.proc_twks.
 - Always make nandroid backup before install or updating version, these are just experiments!
 - Android 11 maybe working, maybe not.
 - Don't report anything without logcats!
