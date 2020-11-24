@@ -27,9 +27,10 @@
 - Don't report anything without logcats!
 - Special thanks to all people that helped and tested my modules.
 
-## Groups discussion
+## Telegram
+- https://t.me/audioryukimods
 - https://t.me/joinchat/E-On6U9cxckhIlAnoPIYpw
-- https://t.me/@modsandco
+- https://t.me/modsandco
 
 ## Donate
 - https://www.paypal.me/reiryuki
