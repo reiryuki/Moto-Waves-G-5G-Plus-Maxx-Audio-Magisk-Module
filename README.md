@@ -27,5 +27,12 @@
 - Don't report anything without logcats!
 - Special thanks to all people that helped and tested my modules.
 
+## Groups discussion
+- https://t.me/joinchat/E-On6U9cxckhIlAnoPIYpw
+- https://t.me/@modsandco
+
+## Donate
+- https://www.paypal.me/reiryuki
+
 ## Download
 - Link bellow at "Releases".
