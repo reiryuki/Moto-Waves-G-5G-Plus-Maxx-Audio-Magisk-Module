@@ -19,7 +19,7 @@
 - If sometime you installing Moto Camera One + feature support but it's crash, keep it installed, then reboot your device. It will be working fine after reboot.
 
 ## Optional
-- Install Audio Modification Library module or [ACDB module](https://t.me/viperatmos) (choose one, don't use both!) if you using multiple audio mods together with Dolby or Viper or any else.
+- Install Audio Modification Library module or [ACDB module](https://t.me/viperatmos) (Android 10 and bellow only for now) (choose one, don't use both!) if you using multiple audio mods together with Dolby or Viper or any else.
 
 ## Attention!
 - Always make nandroid backup before install or updating version, these are just experiments!
