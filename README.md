@@ -17,8 +17,6 @@
 ## Troubleshootings
 - Install Audio Compatibility Patch module for processing all audio outputs.
 - If sometime you installing Moto Camera One + feature support but it's crash, keep it installed, then reboot your device. It will be working fine after reboot.
-
-## Optional
 - Install Audio Modification Library module or [ACDB module](https://t.me/viperatmos) (Android 10 and bellow only for now) (choose one, don't use both!) if you using multiple audio mods together with Dolby or Viper or any else.
 
 ## Attention!
