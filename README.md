@@ -21,7 +21,7 @@
 
 ## Attention!
 - Always make nandroid backup before install or updating version, these are just experiments!
-- Android 11 maybe working, maybe not.
+- Android 11 maybe working, maybe not. Depends of audio policy service / client library.
 - Don't report anything without logcats!
 - Special thanks to all people that helped and tested my modules.
 
