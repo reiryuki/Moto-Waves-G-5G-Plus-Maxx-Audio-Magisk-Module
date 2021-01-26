@@ -15,6 +15,7 @@
 - Tap 'About' then tap multiple times there if you want to disable FX for loudspeaker.
 
 ## Troubleshootings
+- Audio Compatibility Patch module is not recommend for v2.9 and up
 - Install Audio Modification Library module or [ACDB module](https://t.me/viperatmos) (Android 10 and bellow only for now) (choose one, don't use both!) if you using multiple audio mods together with Dolby or Viper or any else.
 
 ## Attention!
