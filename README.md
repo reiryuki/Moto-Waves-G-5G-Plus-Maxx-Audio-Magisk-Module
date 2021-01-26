@@ -15,14 +15,13 @@
 - Tap 'About' then tap multiple times there if you want to disable FX for loudspeaker.
 
 ## Troubleshootings
-- If sometime you installing Moto Camera One + feature support but it's crash, keep it installed, then reboot your device. It will be working fine after reboot.
 - Install Audio Modification Library module or [ACDB module](https://t.me/viperatmos) (Android 10 and bellow only for now) (choose one, don't use both!) if you using multiple audio mods together with Dolby or Viper or any else.
 
 ## Attention!
 - Always make nandroid backup before install or updating version, these are just experiments!
 - Android 11 maybe working, maybe not. Depends of audio policy service / client library.
 - Don't report anything without logcats!
-- Special thanks to all people that helped and tested my modules.
+- Special thanks to all people that helped and supports.
 
 ## Telegram
 - https://t.me/audioryukimods
