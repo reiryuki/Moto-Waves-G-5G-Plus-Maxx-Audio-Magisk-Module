@@ -18,10 +18,14 @@
 - Audio Compatibility Patch module is not recommended for v2.9 and up
 - Install Audio Modification Library module or [ACDB module](https://t.me/viperatmos) (Android 10 and bellow only for now) (choose one, don't use both!) if you using multiple audio mods together with Dolby or Viper or any else.
 
+## Report Guide
+- Send me full logcats using this app https://play.google.com/store/apps/details?id=com.dp.logcatapp
+- Send all "audio_effects" files in system/etc and vendor/etc
+- If you don't do above, it will be closed immediately
+
 ## Attention!
 - Always make nandroid backup before install or updating version, these are just experiments!
 - Android 11 maybe working, maybe not. Depends of audio policy service / client library.
-- Don't report anything without logcats!
 - Special thanks to all people that helped and supports.
 
 ## Telegram
