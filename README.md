@@ -5,35 +5,27 @@
 - [Screenshots](https://reiryuki.blogspot.com/2020/09/motorola-waves-maxx-audio-fx-magisk.html?m=1)
 
 ## Requirements
-- arm64 (for arm, use Moto Waves Edge.)
+- arm64 (for arm, use Moto Waves Edge)
 - Android 9 or 10
 
 ## Installation Guide
-- Install the module via Magisk Manager only.
-- Reboot.
-- Open Moto Audio app using equalizer option in your Music app and tap 'Show icon in the app tray' for showing Moto Audio app icon launcher.
-- Tap 'About' then tap multiple times there if you want to disable FX for loudspeaker.
+- Install the module via Magisk Manager only
+- Read Troubleshootings section if using audio mods other than this
+- Reboot
+- Open Moto Audio app via quick settings and tap 'Show icon in the app tray' to show Moto Audio app icon launcher
+- Tap 'About' then tap multiple times the image if you want to disable FX for loudspeaker
 
 ## Troubleshootings
-- Audio Compatibility Patch module is not recommended for v2.9 and up
-- Install Audio Modification Library module or [ACDB module](https://t.me/viperatmos) (Android 10 and bellow only for now) (choose one, don't use both!) if you using multiple audio mods together with Dolby or Viper or any else.
+- https://t.me/audioryukimods/3081
 
 ## Report Guide
-- Send me full logcats using this app https://play.google.com/store/apps/details?id=com.dp.logcatapp
-- Send all "audio_effects" files in system/etc and vendor/etc
-- If you don't do above, it will be closed immediately
-
-## Attention!
-- Always make nandroid backup before install or updating version, these are just experiments!
-- Android 11 maybe working, maybe not. Depends of audio policy service / client library.
-- Special thanks to all people that helped and supports.
+- https://t.me/audioryukimods/2618
 
 ## Telegram
 - https://t.me/audioryukimods
-- https://t.me/modsandco
 
 ## Donate
-- https://www.paypal.me/reiryuki
+https://www.paypal.me/reiryuki
 
 ## Download
-- Link bellow at "Releases".
+- Tap "Releases" bellow
