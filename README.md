@@ -21,9 +21,6 @@
 ## Report Guide
 - https://t.me/audioryukimods/2618
 
-## Telegram
-- https://t.me/audioryukimods
-
 ## Donate
 https://www.paypal.me/reiryuki
 
