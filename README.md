@@ -19,10 +19,10 @@
 ## Troubleshootings
 - https://t.me/audioryukimods/3081
 
-## Report Guide
+## Bug Report
 - https://t.me/audioryukimods/2618
 
-## Donate
+## Thanks for Donations
 - https://t.me/audioryukimods/2619
 - https://www.paypal.me/reiryuki
 
