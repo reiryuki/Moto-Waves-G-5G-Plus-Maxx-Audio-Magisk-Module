@@ -6,7 +6,7 @@
 - [Screenshots](https://reiryuki.blogspot.com/2020/09/motorola-waves-maxx-audio-fx-magisk.html?m=1)
 
 ## Requirements
-- arm64 (for arm, use Moto Waves Edge)
+- arm64
 - Android 9 or 10
 
 ## Installation Guide
