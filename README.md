@@ -7,7 +7,8 @@
 
 ## Requirements
 - arm64
-- Android 9 or 10
+- Android 11, 10, or 9
+  (Not all ROM is supported)
 
 ## Installation Guide
 - Install the module via Magisk Manager only
