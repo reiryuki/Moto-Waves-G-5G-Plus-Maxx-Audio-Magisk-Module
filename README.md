@@ -6,8 +6,8 @@
 - [Screenshots](https://reiryuki.blogspot.com/2020/09/motorola-waves-maxx-audio-fx-magisk.html?m=1)
 
 ## Requirements
-- arm64
-- Android 11, 10, or 9
+- arm64 or arm architecture
+- Android 11, 10, 9, or 8
   (Not all ROM is supported)
 
 ## Installation Guide
