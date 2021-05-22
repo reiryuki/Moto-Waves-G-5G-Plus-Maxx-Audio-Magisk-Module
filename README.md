@@ -7,7 +7,7 @@
 
 ## Requirements
 - arm64 or arm architecture
-- Android 11, 10, 9, or 8
+- Android 8 until 11
   (Not all ROM is supported)
 
 ## Installation Guide
