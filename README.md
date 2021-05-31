@@ -1,4 +1,4 @@
-# Moto Waves G 5G Plus Maxx Audio FX Magisk Module
+# Moto Waves G 5G Plus Maxx Audio Magisk Module
 
 ## Descriptions
 - An equalizer ported from Motorola Moto G 5G Plus (nairo)
