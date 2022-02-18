@@ -3,7 +3,9 @@
 ## Descriptions
 - An equalizer ported from Motorola Moto G 5G Plus (nairo)
 - Global type soundfx
-- [Screenshots](https://reiryuki.blogspot.com/2020/09/motorola-waves-maxx-audio-fx-magisk.html?m=1)
+
+## Screenshots
+- https://reiryuki.blogspot.com/2020/09/motorola-waves-maxx-audio-fx-magisk.html?m=1
 
 ## Requirements
 - arm64 or arm architecture
@@ -28,4 +30,4 @@
 - https://www.paypal.me/reiryuki
 
 ## Download
-- Moved link here: https://www.pling.com/p/1531761/
+- https://www.pling.com/p/1531761/
