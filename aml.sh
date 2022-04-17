@@ -1,6 +1,6 @@
 MODPATH=${0%/*}
 
-# destinations
+# destination
 LIBPATH="\/vendor\/lib\/soundfx"
 MODAEC=`find $MODPATH/system -type f -name *audio*effects*.conf`
 MODAEX=`find $MODPATH/system -type f -name *audio*effects*.xml`

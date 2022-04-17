@@ -2,6 +2,7 @@
 
 MODPATH=${0%/*}
 API=`getprop ro.build.version.sdk`
+AML=/data/adb/modules/aml
 
 # debug
 exec 2>$MODPATH/debug.log
@@ -26,7 +27,41 @@ resetprop -n persist.vendor.audio_fx.force_waves_enabled true
 killall audioserver
 
 # wait
-sleep 60
+sleep 20
+
+# mount
+NAME="*audio*effects*.conf -o -name *audio*effects*.xml -o -name *policy*.conf -o -name *policy*.xml"
+if [ ! -d $AML ] || [ -f $AML/disable ]; then
+  DIR=$MODPATH/system/vendor
+else
+  DIR=$AML/system/vendor
+fi
+FILE=`find $DIR/odm/etc -maxdepth 1 -type f -name $NAME`
+if [ "`realpath /odm/etc`" != /vendor/odm/etc ] && [ "$FILE" ]; then
+  for i in $FILE; do
+    j="$(echo $i | sed "s|$DIR||")"
+    umount $j
+    mount -o bind $i $j
+  done
+  killall audioserver
+fi
+if [ ! -d $AML ] || [ -f $AML/disable ]; then
+  DIR=$MODPATH/system
+else
+  DIR=$AML/system
+fi
+FILE=`find $DIR/etc -maxdepth 1 -type f -name $NAME`
+if [ -d /my_product/etc ] && [ "$FILE" ]; then
+  for i in $FILE; do
+    j="$(echo $i | sed "s|$DIR||")"
+    umount /my_product$j
+    mount -o bind $i /my_product$j
+  done
+  killall audioserver
+fi
+
+# wait
+sleep 40
 
 # function
 grant_permission() {
@@ -41,11 +76,6 @@ fi
 # grant
 PKG=com.waves.maxxservice
 grant_permission
-PID=`pidof $PKG`
-if [ $PID ]; then
-  echo -17 > /proc/$PID/oom_adj
-  echo -1000 > /proc/$PID/oom_score_adj
-fi
 
 # grant
 PKG=com.motorola.motowaves
