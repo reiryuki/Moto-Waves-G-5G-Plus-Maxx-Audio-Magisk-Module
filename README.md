@@ -8,8 +8,8 @@
 - https://reiryuki.blogspot.com/2020/09/motorola-waves-maxx-audio-fx-magisk.html?m=1
 
 ## Requirements
-- arm64 or arm architecture
-- Android 8 until 11
+- Architecture arm64 or arm
+- Android 8 until 11 early builds only
   (Not all ROM is supported)
 
 ## Installation Guide
@@ -19,8 +19,11 @@
 - Open Moto Audio app via quick settings and tap 'Show icon in the app tray' to show Moto Audio app icon launcher
 - Tap 'About' then tap multiple times the image if you want to disable FX for loudspeaker
 
-## Troubleshootings
+## Optionals & Troubleshootings
+- https://t.me/androidryukimodsdiscussions/60861
+- https://t.me/androidryukimodsdiscussions/29836
 - https://t.me/androidryukimodsdiscussions/3081
+- https://t.me/androidryukimodsdiscussions/26764
 
 ## Bug Report
 - https://t.me/androidryukimodsdiscussions/2618
