@@ -47,6 +47,7 @@ if [ "$MODAEC" ]; then
 #  sed -i "/^        fens {/ {;N s/        fens {\n        }//}" $MODAEC
 #  sed -i "/^        lmfv {/ {;N s/        lmfv {\n        }//}" $MODAEC
   sed -i "/^        dirac {/ {;N s/        dirac {\n        }//}" $MODAEC
+  sed -i "/^        dtsaudio {/ {;N s/        dtsaudio {\n        }//}" $MODAEC
   if ! grep -Eq '^output_session_processing {' $MODAEC; then
     sed -i -e '$a\
 output_session_processing {\
@@ -97,6 +98,7 @@ if [ "$MODAEX" ]; then
 #  sed -i 's/<apply effect="fens"\/>//g' $MODAEX
 #  sed -i 's/<apply effect="lmfv"\/>//g' $MODAEX
   sed -i 's/<apply effect="dirac"\/>//g' $MODAEX
+  sed -i 's/<apply effect="dtsaudio"\/>//g' $MODAEX
   if ! grep -Eq '<postprocess>' $MODAEX || grep -Eq '<!-- Audio post processor' $MODAEX; then
     sed -i '/<\/effects>/a\
     <postprocess>\
@@ -142,11 +144,17 @@ fi
 #2  remove_xml
 #2fi
 
+# misoundfx
+#3RMV="libmisoundfx.so misoundfx 5b8e36a5-144a-4c38-b1d7-0002a5d5c51b"
+#3if [ "$MODAEC" ]; then
+#3  remove_conf
+#3fi
+#3if [ "$MODAEX" ]; then
+#3  remove_xml
+#3fi
+
 # conflict
-RMV="libmisoundfx.so
-     misoundfx
-     5b8e36a5-144a-4c38-b1d7-0002a5d5c51b
-     libsamsungSoundbooster_plus_legacy.so libsamsungSoundbooster_plus.so
+RMV="libsamsungSoundbooster_plus_legacy.so libsamsungSoundbooster_plus.so
      soundbooster_plus
      50de45f0-5d4c-11e5-a837-0800200c9a66
      libaudiosaplus_sec_legacy.so libaudiosaplus_sec.so

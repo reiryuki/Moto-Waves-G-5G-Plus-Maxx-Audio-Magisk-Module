@@ -1,6 +1,3 @@
-(
-
-mount /data
 mount -o rw,remount /data
 MODPATH=${0%/*}
 MODID=`echo "$MODPATH" | sed -n -e 's/\/data\/adb\/modules\///p'`
@@ -21,7 +18,5 @@ resetprop -p --delete persist.vendor.audio_fx.waves.processing
 resetprop -p --delete persist.vendor.audio_fx.waves.proc_twks
 resetprop -p --delete persist.vendor.audio_fx.waves.systrace
 resetprop -p --delete persist.vendor.audio_fx.force_waves_enabled
-
-) 2>/dev/null
 
 
