@@ -1,14 +1,12 @@
-# type
-magiskpolicy --live "type system_lib_file"
-magiskpolicy --live "type vendor_file"
-magiskpolicy --live "type vendor_configs_file"
-magiskpolicy --live "type same_process_hal_file"
-
 # debug
 magiskpolicy --live "dontaudit system_server system_file file write"
 magiskpolicy --live "allow     system_server system_file file write"
 
-# chcon
+# context
+magiskpolicy --live "type same_process_hal_file"
+magiskpolicy --live "type system_lib_file"
+magiskpolicy --live "type vendor_file"
+magiskpolicy --live "type vendor_configs_file"
 magiskpolicy --live "dontaudit vendor_configs_file labeledfs filesystem associate"
 magiskpolicy --live "allow     vendor_configs_file labeledfs filesystem associate"
 magiskpolicy --live "dontaudit init vendor_configs_file dir relabelfrom"

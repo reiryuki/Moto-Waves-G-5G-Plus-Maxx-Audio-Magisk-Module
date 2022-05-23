@@ -34,7 +34,8 @@ if [ -d $DIR ] && [ ! -f $AML/disable ]; then
 fi
 
 # mount
-NAME="*audio*effects*.conf -o -name *audio*effects*.xml -o -name *policy*.conf -o -name *policy*.xml"
+NAME="*audio*effects*.conf -o -name *audio*effects*.xml"
+#pNAME="*audio*effects*.conf -o -name *audio*effects*.xml -o -name *policy*.conf -o -name *policy*.xml"
 if [ ! -d $AML ] || [ -f $AML/disable ]; then
   DIR=$MODPATH/system/vendor
 else
@@ -67,23 +68,16 @@ fi
 # wait
 sleep 40
 
-# function
-grant_permission() {
-if [ "$API" -ge 31 ]; then
-  pm grant $PKG android.permission.BLUETOOTH_CONNECT
-fi
+# grant
+PKG=com.waves.maxxservice
 if [ "$API" -ge 30 ]; then
   appops set $PKG AUTO_REVOKE_PERMISSIONS_IF_UNUSED ignore
 fi
-}
-
-# grant
-PKG=com.waves.maxxservice
-grant_permission
 
 # grant
 PKG=com.motorola.motowaves
-grant_permission
-appops set $PKG SYSTEM_ALERT_WINDOW allow
+if [ "$API" -ge 30 ]; then
+  appops set $PKG AUTO_REVOKE_PERMISSIONS_IF_UNUSED ignore
+fi
 
 
