@@ -21,9 +21,6 @@ resetprop -n persist.vendor.audio_fx.waves.systrace true
 resetprop -p --delete persist.vendor.audio_fx.force_waves_enabled
 resetprop -n persist.vendor.audio_fx.force_waves_enabled true
 
-# restart
-killall audioserver
-
 # wait
 sleep 20
 
@@ -60,10 +57,9 @@ if [ -d /my_product/etc ] && [ "$FILE" ]; then
     fi
   done
 fi
-if ( [ `realpath /odm/etc` == /odm/etc ] && [ "$FILE" ] )\
-|| ( [ -d /my_product/etc ] && [ "$FILE" ] ); then
-  killall audioserver
-fi
+
+# restart
+killall audioserver
 
 # wait
 sleep 40

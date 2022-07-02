@@ -14,6 +14,13 @@ if [ -f $FILE ]; then
   sh $FILE
 fi
 
+# context
+chcon -R u:object_r:system_lib_file:s0 $MODPATH/system/lib*
+chcon -R u:object_r:vendor_file:s0 $MODPATH/system/vendor
+chcon -R u:object_r:vendor_configs_file:s0 $MODPATH/system/vendor/etc
+chcon -R u:object_r:vendor_configs_file:s0 $MODPATH/system/vendor/odm/etc
+chcon u:object_r:same_process_hal_file:s0 $MODPATH/system/vendor/lib*/libadspd.so
+
 # etc
 if [ -d /sbin/.magisk ]; then
   MAGISKTMP=/sbin/.magisk

@@ -7,6 +7,9 @@ else
   MAGISKTMP=`find /dev -mindepth 2 -maxdepth 2 -type d -name .magisk`
 fi
 
+# optionals
+OPTIONALS=/sdcard/optionals.prop
+
 # info
 MODVER=`grep_prop version $MODPATH/module.prop`
 MODVERCODE=`grep_prop versionCode $MODPATH/module.prop`
@@ -19,7 +22,7 @@ ui_print " "
 
 # architecture
 if [ "$ARCH" == arm64 ] || [ "$ARCH" == arm ]; then
-  if getprop | grep -Eq "waves.32\]: \[1"; then
+  if [ "`grep_prop waves.32bit $OPTIONALS`" == 1 ]; then
     ARCH=arm
     IS64BIT=false
   fi
@@ -45,7 +48,8 @@ if [ "$API" -lt $NUM ]; then
   abort
 else
   ui_print "- SDK $API"
-  if [ "$API" -lt 30 ] || getprop | grep -Eq "waves.mode\]: \[10"; then
+  if [ "$API" -lt 30 ]\
+  || [ "`grep_prop waves.mode $OPTIONALS`" == 10 ]; then
     ui_print "  Using legacy version"
     cp -rf $MODPATH/system_10/* $MODPATH/system
   fi
@@ -59,7 +63,7 @@ if [ "$BOOTMODE" != true ]; then
 fi
 FILE=$MODPATH/sepolicy.sh
 DES=$MODPATH/sepolicy.rule
-if [ -f $FILE ] && ! getprop | grep -Eq "sepolicy.sh\]: \[1"; then
+if [ -f $FILE ] && [ "`grep_prop sepolicy.sh $OPTIONALS`" != 1 ]; then
   mv -f $FILE $DES
   sed -i 's/magiskpolicy --live "//g' $DES
   sed -i 's/"//g' $DES
@@ -87,15 +91,15 @@ fi
 rm -rf $MODPATH/system_10
 
 # config
-if getprop | grep -Eq "waves.config\]: \[pstar"; then
+if [ "`grep_prop waves.config $OPTIONALS`" == pstar ]; then
   ui_print "- Using Moto Waves Edge 30 Pro (pstar) config"
   cp -rf $MODPATH/system_pstar/* $MODPATH/system
   ui_print " "
-elif getprop | grep -Eq "waves.config\]: \[nio"; then
+elif [ "`grep_prop waves.config $OPTIONALS`" == nio ]; then
   ui_print "- Using Moto Waves XT2125-4 (nio) config"
   cp -rf $MODPATH/system_nio/* $MODPATH/system
   ui_print " "
-elif getprop | grep -Eq "waves.config\]: \[racer"; then
+elif [ "`grep_prop waves.config $OPTIONALS`" == racer ]; then
   ui_print "- Using Moto Waves Edge (racer) config"
   cp -rf $MODPATH/system_racer/* $MODPATH/system
   ui_print " "
@@ -105,7 +109,7 @@ rm -rf $MODPATH/system_nio
 rm -rf $MODPATH/system_racer
 
 # mod ui
-if getprop | grep -Eq "mod.ui\]: \[1"; then
+if [ "`grep_prop mod.ui $OPTIONALS`" == 1 ]; then
   APP=MotoWaves
   FILE=/sdcard/$APP.apk
   DIR=`find $MODPATH/system -type d -name $APP`
@@ -138,7 +142,7 @@ extract_lib() {
 
 # extract
 APP=MotoWaves
-if getprop | grep -Eq "waves.32\]: \[1"; then
+if [ "`grep_prop waves.32bit $OPTIONALS`" == 1 ]; then
   PROP=armeabi-v7a
 else
   PROP=`getprop ro.product.cpu.abi`
@@ -154,7 +158,6 @@ extract_lib
 
 # cleaning
 ui_print "- Cleaning..."
-APP="`ls $MODPATH/system/priv-app` `ls $MODPATH/system/app`"
 PKG="com.motorola.motowaves
      com.waves.maxxservice
      com.motorola.motosignature.app"
@@ -163,9 +166,6 @@ if [ "$BOOTMODE" == true ]; then
     RES=`pm uninstall $PKGS`
   done
 fi
-for APPS in $APP; do
-  rm -f `find /data/dalvik-cache /data/resource-cache -type f -name *$APPS*.apk`
-done
 rm -rf /metadata/magisk/$MODID
 rm -rf /mnt/vendor/persist/magisk/$MODID
 rm -rf /persist/magisk/$MODID
@@ -174,9 +174,8 @@ rm -rf /cache/magisk/$MODID
 ui_print " "
 
 # power save
-PROP=`getprop power.save`
 FILE=$MODPATH/system/etc/sysconfig/*
-if [ "$PROP" == 1 ]; then
+if [ "`grep_prop power.save $OPTIONALS`" == 1 ]; then
   ui_print "- $MODNAME will not be allowed in power save."
   ui_print "  It may save your battery but decreasing $MODNAME performance."
   for PKGS in $PKG; do
@@ -200,7 +199,8 @@ fi
 # cleanup
 DIR=/data/adb/modules/$MODID
 FILE=$DIR/module.prop
-if getprop | grep -Eq "waves.cleanup\]: \[1"; then
+if [ "`grep_prop data.cleanup $OPTIONALS`" == 1 ]; then
+  sed -i 's/^data.cleanup=1/data.cleanup=0/' $OPTIONALS
   ui_print "- Cleaning-up $MODID data..."
   cleanup
   ui_print " "
@@ -230,13 +230,9 @@ fi\' $MODPATH/post-fs-data.sh
 }
 
 # permissive
-if getprop | grep -Eq "permissive.mode\]: \[1"; then
+if [ "`grep_prop permissive.mode $OPTIONALS`" == 1 ]; then
   ui_print "- Using permissive method"
   rm -f $MODPATH/sepolicy.rule
-  permissive
-  ui_print " "
-elif getprop | grep -Eq "permissive.mode\]: \[2"; then
-  ui_print "- Using both permissive and SE policy patch"
   permissive
   ui_print " "
 fi
@@ -320,7 +316,8 @@ MODDIR=$MODPATH/system/vendor/euclid/product/app/$APPS
 replace_dir
 }
 check_app() {
-if [ "$BOOTMODE" == true ]; then
+if [ "$BOOTMODE" == true ]\
+&& [ "`grep_prop hide.parts $OPTIONALS`" == 1 ]; then
   for APPS in $APP; do
     FILE=`find $MAGISKTMP/mirror/system_root/system\
                $MAGISKTMP/mirror/system_root/product\
@@ -345,17 +342,16 @@ if [ "$BOOTMODE" == true ]\
 && dumpsys media.audio_flinger | grep -Eq $UUID; then
   ui_print "- $NAME is detected."
   ui_print "  It may be conflicting with this module."
-  ui_print "  You can run terminal:"
-  ui_print " "
-  ui_print "  su"
-  ui_print "  setprop disable.dirac 1"
-  ui_print " "
+  ui_print "  You can type:"
+  ui_print "  disable.dirac=1"
+  ui_print "  inside $OPTIONALS"
   ui_print "  and reinstall this module if you want to disable it."
   ui_print " "
 fi
 }
 
 # hide
+APP="`ls $MODPATH/system/priv-app` `ls $MODPATH/system/app`"
 hide_oat
 APP="MusicFX
      MotoWavesV2
@@ -365,13 +361,14 @@ APP="MusicFX
 for APPS in $APP; do
   hide_app
 done
-if getprop | grep -Eq "disable.dirac\]: \[1" || getprop | grep -Eq "disable.misoundfx\]: \[1"; then
+if [ "`grep_prop disable.dirac $OPTIONALS`" == 1 ]\
+&& [ "`grep_prop disable.misoundfx $OPTIONALS`" == 1 ]; then
   APP=MiSound
   for APPS in $APP; do
     hide_app
   done
 fi
-if getprop | grep -Eq "disable.dirac\]: \[1"; then
+if [ "`grep_prop disable.dirac $OPTIONALS`" == 1 ]; then
   APP="Dirac DiracAudioControlService"
   for APPS in $APP; do
     hide_app
@@ -380,15 +377,11 @@ fi
 
 # dirac & misoundfx
 FILE=$MODPATH/.aml.sh
-APP="XiaomiParts
-     ZenfoneParts
-     ZenParts
-     GalaxyParts
-     KharaMeParts
-     DeviceParts"
+APP="XiaomiParts ZenfoneParts ZenParts GalaxyParts
+     KharaMeParts DeviceParts PocoParts"
 NAME='dirac soundfx'
 UUID=e069d9e0-8329-11df-9168-0002a5d5c51b
-if getprop | grep -Eq "disable.dirac\]: \[1"; then
+if [ "`grep_prop disable.dirac $OPTIONALS`" == 1 ]; then
   ui_print "- $NAME will be disabled"
   sed -i 's/#2//g' $FILE
   check_app
@@ -399,7 +392,7 @@ fi
 FILE=$MODPATH/.aml.sh
 NAME=misoundfx
 UUID=5b8e36a5-144a-4c38-b1d7-0002a5d5c51b
-if getprop | grep -Eq "disable.misoundfx\]: \[1"; then
+if [ "`grep_prop disable.misoundfx $OPTIONALS`" == 1 ]; then
   ui_print "- $NAME will be disabled"
   sed -i 's/#3//g' $FILE
   check_app
@@ -409,11 +402,9 @@ else
   && dumpsys media.audio_flinger | grep -Eq $UUID; then
     ui_print "- $NAME is detected."
     ui_print "  It may be conflicting with this module."
-    ui_print "  You can run terminal:"
-    ui_print " "
-    ui_print "  su"
-    ui_print "  setprop disable.misoundfx 1"
-    ui_print " "
+    ui_print "  You can type:"
+    ui_print "  disable.misoundfx=1"
+    ui_print "  inside $OPTIONALS"
     ui_print "  and reinstall this module if you want to disable it."
     ui_print " "
   fi
@@ -423,7 +414,7 @@ fi
 FILE=$MODPATH/.aml.sh
 NAME='dirac_controller soundfx'
 UUID=b437f4de-da28-449b-9673-667f8b964304
-if getprop | grep -Eq "disable.dirac\]: \[1"; then
+if [ "`grep_prop disable.dirac $OPTIONALS`" == 1 ]; then
   ui_print "- $NAME will be disabled"
   ui_print " "
 else
@@ -434,7 +425,7 @@ fi
 FILE=$MODPATH/.aml.sh
 NAME='dirac_music soundfx'
 UUID=b437f4de-da28-449b-9673-667f8b9643fe
-if getprop | grep -Eq "disable.dirac\]: \[1"; then
+if [ "`grep_prop disable.dirac $OPTIONALS`" == 1 ]; then
   ui_print "- $NAME will be disabled"
   ui_print " "
 else
@@ -445,7 +436,7 @@ fi
 FILE=$MODPATH/.aml.sh
 NAME='dirac_gef soundfx'
 UUID=3799D6D1-22C5-43C3-B3EC-D664CF8D2F0D
-if getprop | grep -Eq "disable.dirac\]: \[1"; then
+if [ "`grep_prop disable.dirac $OPTIONALS`" == 1 ]; then
   ui_print "- $NAME will be disabled"
   ui_print " "
 else
@@ -454,7 +445,7 @@ fi
 
 # stream mode
 FILE=$MODPATH/.aml.sh
-PROP=`getprop stream.mode`
+PROP=`grep_prop stream.mode $OPTIONALS`
 if echo "$PROP" | grep -Eq m; then
   ui_print "- Activating music stream..."
   sed -i 's/#m//g' $FILE
@@ -489,7 +480,7 @@ fi
 
 # audio rotation
 FILE=$MODPATH/service.sh
-if getprop | grep -Eq "audio.rotation\]: \[1"; then
+if [ "`grep_prop audio.rotation $OPTIONALS`" == 1 ]; then
   ui_print "- Activating ro.audio.monitorRotation=true"
   sed -i '1i\
 resetprop ro.audio.monitorRotation true' $FILE
@@ -498,7 +489,7 @@ fi
 
 # raw
 FILE=$MODPATH/.aml.sh
-if getprop | grep -Eq "disable.raw\]: \[0"; then
+if [ "`grep_prop disable.raw $OPTIONALS`" == 0 ]; then
   ui_print "- Not disabling Ultra Low Latency playback (RAW)"
   ui_print " "
 else
@@ -507,7 +498,7 @@ fi
 
 # other
 FILE=$MODPATH/service.sh
-if getprop | grep -Eq "other.etc\]: \[1"; then
+if [ "`grep_prop other.etc $OPTIONALS`" == 1 ]; then
   ui_print "- Activating other etc files bind mount..."
   sed -i 's/#p//g' $FILE
   ui_print " "
@@ -519,21 +510,6 @@ DIR=`find $MODPATH/system/vendor -type d`
 for DIRS in $DIR; do
   chown 0.2000 $DIRS
 done
-magiskpolicy --live "type system_lib_file"
-magiskpolicy --live "type vendor_file"
-magiskpolicy --live "type vendor_configs_file"
-magiskpolicy --live "type same_process_hal_file"
-magiskpolicy --live "dontaudit { same_process_hal_file system_lib_file vendor_file vendor_configs_file } labeledfs filesystem associate"
-magiskpolicy --live "allow     { same_process_hal_file system_lib_file vendor_file vendor_configs_file } labeledfs filesystem associate"
-magiskpolicy --live "dontaudit init { system_lib_file vendor_file vendor_configs_file } dir relabelfrom"
-magiskpolicy --live "allow     init { system_lib_file vendor_file vendor_configs_file } dir relabelfrom"
-magiskpolicy --live "dontaudit init { same_process_hal_file system_lib_file vendor_file vendor_configs_file } file relabelfrom"
-magiskpolicy --live "allow     init { same_process_hal_file system_lib_file vendor_file vendor_configs_file } file relabelfrom"
-chcon -R u:object_r:system_lib_file:s0 $MODPATH/system/lib*
-chcon -R u:object_r:vendor_file:s0 $MODPATH/system/vendor
-chcon -R u:object_r:vendor_configs_file:s0 $MODPATH/system/vendor/etc
-chcon -R u:object_r:vendor_configs_file:s0 $MODPATH/system/vendor/odm/etc
-chcon u:object_r:same_process_hal_file:s0 $MODPATH/system/vendor/lib*/libadspd.so
 ui_print " "
 
 
