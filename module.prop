@@ -1,12 +1,8 @@
 id=MotoWaves
 name=Moto Waves G 5G Plus
-version=v6.5-beta.1
+version=v6.5
 versionCode=55
 author=Rei Ryuki the Fixer
 description=An equalizer global type soundfx ported from Motorola G 5G Plus for any Android 8 until 11 (early builds only), architecture arm64 and arm.
-# Source: https://dumps.tadiphone.dev/dumps/motorola/nairo msi-user-11-RPN31.Q4U-39-27-5-20ead-release-keys
-# nio source: https://dumps.tadiphone.dev/dumps/motorola/nio msi_prc-user-11-RRN31.Q3-1-11-1-919e2-release-keys
-# pstar source: https://dumps.tadiphone.dev/dumps/motorola/pstar msi-user-11-RRAS31.Q3-19-86-4-01582-release-keys
-# racer source: https://dumps.tadiphone.dev/dumps/motorola/racer msi-user-11-RPD31.Q4U-39-26-4-3c874-release-keys
 
 
