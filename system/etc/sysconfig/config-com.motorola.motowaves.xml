@@ -3,4 +3,3 @@
     <hidden-api-whitelisted-app package="com.motorola.motowaves"/>
     <allow-in-power-save package="com.motorola.motowaves"/>
 </config>
-
