@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <permissions>
-    <privapp-permissions package="com.waves.maxxservice">
-        <permission name="android.permission.REAL_GET_TASKS"/>
+    <privapp-permissions package="com.motorola.motowaves">
         <permission name="android.permission.INTERACT_ACROSS_USERS"/>
     </privapp-permissions>
 </permissions>
