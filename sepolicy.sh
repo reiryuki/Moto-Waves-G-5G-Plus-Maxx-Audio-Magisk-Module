@@ -15,8 +15,8 @@ magiskpolicy --live "dontaudit init { system_lib_file vendor_file vendor_configs
 magiskpolicy --live "allow     init { system_lib_file vendor_file vendor_configs_file same_process_hal_file } file relabelfrom"
 
 # dir
-magiskpolicy --live "dontaudit { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } { mcd_data_file sysfs_msm_subsys } dir search
-magiskpolicy --live "allow     { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } { mcd_data_file sysfs_msm_subsys } dir search
+magiskpolicy --live "dontaudit { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } { mcd_data_file sysfs_msm_subsys } dir search"
+magiskpolicy --live "allow     { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } { mcd_data_file sysfs_msm_subsys } dir search"
 
 # additional
 magiskpolicy --live "allow { hal_audio_default mtk_hal_audio audioserver } system_suspend_hwservice hwservice_manager find"
@@ -26,18 +26,22 @@ magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } {
 magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } { mnt_vendor_file system_prop } file { read open getattr }"
 magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } audio_prop file { read open getattr }"
 magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } audio_prop file { read open getattr }"
+magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } radio_prop file read"
+magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } radio_prop file read"
 magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } sysfs_wake_lock file { write open }"
 magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } sysfs_wake_lock file { write open }"
-magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } vendor_default_prop file open"
-magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } vendor_default_prop file open"
-magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } { sysfs_net sysfs } dir read"
-magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } { sysfs_net sysfs } dir read"
+magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } vendor_default_prop file { read open }"
+magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } vendor_default_prop file { read open }"
+magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } { sysfs_net sysfs } dir { read open }"
+magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } { sysfs_net sysfs } dir { read open }"
 magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } logd_socket sock_file write"
 magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } logd_socket sock_file write"
 magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } logd unix_stream_socket connectto"
 magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } logd unix_stream_socket connectto"
 magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } { diag_device vendor_diag_device } chr_file { read write open ioctl getattr }"
 magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } { diag_device vendor_diag_device } chr_file { read write open ioctl getattr }"
+magiskpolicy --live "dontaudit { hal_audio_default mtk_hal_audio audioserver } device chr_file { read write }"
+magiskpolicy --live "allow     { hal_audio_default mtk_hal_audio audioserver } device chr_file { read write }"
 magiskpolicy --live "dontaudit hal_audio_default hal_audio_default capability2 block_suspend"
 magiskpolicy --live "allow     hal_audio_default hal_audio_default capability2 block_suspend"
 magiskpolicy --live "dontaudit mtk_hal_audio mtk_hal_audio capability2 block_suspend"

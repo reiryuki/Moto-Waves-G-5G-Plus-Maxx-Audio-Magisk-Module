@@ -1,11 +1,27 @@
-ui_print " "
+# space
+if [ "$BOOTMODE" == true ]; then
+  ui_print " "
+fi
 
 # magisk
 if [ -d /sbin/.magisk ]; then
   MAGISKTMP=/sbin/.magisk
 else
-  MAGISKTMP=`find /dev -mindepth 2 -maxdepth 2 -type d -name .magisk`
+  MAGISKTMP=`realpath /dev/*/.magisk`
 fi
+
+# path
+if [ "$BOOTMODE" == true ]; then
+  MIRROR=$MAGISKTMP/mirror
+else
+  MIRROR=
+fi
+SYSTEM=`realpath $MIRROR/system`
+PRODUCT=`realpath $MIRROR/product`
+VENDOR=`realpath $MIRROR/vendor`
+SYSTEM_EXT=`realpath $MIRROR/system/system_ext`
+ODM=`realpath /odm`
+MY_PRODUCT=`realpath /my_product`
 
 # optionals
 OPTIONALS=/sdcard/optionals.prop
@@ -41,26 +57,34 @@ fi
 
 # sdk
 NUM=26
+NUM2=30
 if [ "$API" -lt $NUM ]; then
-  ui_print "! Unsupported SDK $API. You have to upgrade your"
-  ui_print "  Android version at least SDK API $NUM to use this"
-  ui_print "  module."
+  ui_print "! Unsupported SDK $API. You have to upgrade your Android"
+  ui_print "  version at least SDK API $NUM to use this module."
   abort
+elif [ "$API" -gt $NUM2 ]; then
+  ui_print "! Unsupported SDK $API. This module is only for SDK API"
+  ui_print "  $NUM2 and bellow."
 else
   ui_print "- SDK $API"
-  if [ "$API" -lt 30 ]\
+  if [ "$API" -lt $NUM2 ]\
   || [ "`grep_prop waves.mode $OPTIONALS`" == 10 ]; then
     ui_print "  Using legacy version"
     cp -rf $MODPATH/system_10/* $MODPATH/system
   fi
-  ui_print " "
 fi
+ui_print " "
+rm -rf $MODPATH/system_10
 
-# sepolicy.rule
+# mount
 if [ "$BOOTMODE" != true ]; then
+  mount -o rw -t auto /dev/block/bootdevice/by-name/cust /vendor
+  mount -o rw -t auto /dev/block/bootdevice/by-name/vendor /vendor
   mount -o rw -t auto /dev/block/bootdevice/by-name/persist /persist
   mount -o rw -t auto /dev/block/bootdevice/by-name/metadata /metadata
 fi
+
+# sepolicy.rule
 FILE=$MODPATH/sepolicy.sh
 DES=$MODPATH/sepolicy.rule
 if [ -f $FILE ] && [ "`grep_prop sepolicy.sh $OPTIONALS`" != 1 ]; then
@@ -74,12 +98,8 @@ mv -f $MODPATH/aml.sh $MODPATH/.aml.sh
 
 # check
 NAME=_ZN7android23sp_report_stack_pointerEv
-if [ "$BOOTMODE" == true ]; then
-  FILE=$MAGISKTMP/mirror/system/lib*/libaudioclient.so
-else
-  FILE=/system/lib*/libaudioclient.so
-fi
-if [ "$API" -gt 29 ]; then
+FILE=$SYSTEM/lib/libaudioclient.so
+if [ "$API" -ge 30 ]; then
   ui_print "- Checking $NAME function..."
   ui_print "  Please wait..."
   if ! grep -Eq $NAME $FILE; then
@@ -212,28 +232,43 @@ elif [ -d $DIR ] && ! grep -Eq "$MODNAME" $FILE; then
 fi
 
 # function
+permissive_2() {
+sed -i '1i\
+SELINUX=`getenforce`\
+if [ "$SELINUX" == Enforcing ]; then\
+  magiskpolicy --live "permissive *"\
+fi\' $MODPATH/post-fs-data.sh
+}
 permissive() {
+SELINUX=`getenforce`
+if [ "$SELINUX" == Enforcing ]; then
+  setenforce 0
   SELINUX=`getenforce`
   if [ "$SELINUX" == Enforcing ]; then
-    setenforce 0
-    SELINUX=`getenforce`
-    if [ "$SELINUX" == Enforcing ]; then
-      ui_print "  ! Your device can't be turned to Permissive state."
-    fi
+    ui_print "  Your device can't be turned to Permissive state."
+    ui_print "  Using Magisk Permissive mode instead."
+    permissive_2
+  else
     setenforce 1
-  fi
-  sed -i '1i\
+    sed -i '1i\
 SELINUX=`getenforce`\
 if [ "$SELINUX" == Enforcing ]; then\
   setenforce 0\
 fi\' $MODPATH/post-fs-data.sh
+  fi
+fi
 }
 
 # permissive
 if [ "`grep_prop permissive.mode $OPTIONALS`" == 1 ]; then
-  ui_print "- Using permissive method"
+  ui_print "- Using device Permissive mode."
   rm -f $MODPATH/sepolicy.rule
   permissive
+  ui_print " "
+elif [ "`grep_prop permissive.mode $OPTIONALS`" == 2 ]; then
+  ui_print "- Using Magisk Permissive mode."
+  rm -f $MODPATH/sepolicy.rule
+  permissive_2
   ui_print " "
 fi
 
@@ -251,67 +286,37 @@ if [ -d $DIR ]; then
 fi
 }
 hide_app() {
-if [ "$BOOTMODE" == true ]; then
-  DIR=$MAGISKTMP/mirror/system/app/$APPS
-else
-  DIR=/system/app/$APPS
-fi
+DIR=$SYSTEM/app/$APPS
 MODDIR=$MODPATH/system/app/$APPS
 replace_dir
-if [ "$BOOTMODE" == true ]; then
-  DIR=$MAGISKTMP/mirror/system/priv-app/$APPS
-else
-  DIR=/system/priv-app/$APPS
-fi
+DIR=$SYSTEM/priv-app/$APPS
 MODDIR=$MODPATH/system/priv-app/$APPS
 replace_dir
-if [ "$BOOTMODE" == true ]; then
-  DIR=$MAGISKTMP/mirror/product/app/$APPS
-else
-  DIR=/product/app/$APPS
-fi
+DIR=$PRODUCT/app/$APPS
 MODDIR=$MODPATH/system/product/app/$APPS
 replace_dir
-if [ "$BOOTMODE" == true ]; then
-  DIR=$MAGISKTMP/mirror/product/priv-app/$APPS
-else
-  DIR=/product/priv-app/$APPS
-fi
+DIR=$PRODUCT/priv-app/$APPS
 MODDIR=$MODPATH/system/product/priv-app/$APPS
 replace_dir
-if [ "$BOOTMODE" == true ]; then
-  DIR=$MAGISKTMP/mirror/product/preinstall/$APPS
-else
-  DIR=/product/preinstall/$APPS
-fi
+DIR=$MY_PRODUCT/app/$APPS
+MODDIR=$MODPATH/system/product/app/$APPS
+replace_dir
+DIR=$MY_PRODUCT/priv-app/$APPS
+MODDIR=$MODPATH/system/product/priv-app/$APPS
+replace_dir
+DIR=$PRODUCT/preinstall/$APPS
 MODDIR=$MODPATH/system/product/preinstall/$APPS
 replace_dir
-if [ "$BOOTMODE" == true ]; then
-  DIR=$MAGISKTMP/mirror/system_ext/app/$APPS
-else
-  DIR=/system/system_ext/app/$APPS
-fi
+DIR=$SYSTEM_EXT/app/$APPS
 MODDIR=$MODPATH/system/system_ext/app/$APPS
 replace_dir
-if [ "$BOOTMODE" == true ]; then
-  DIR=$MAGISKTMP/mirror/system_ext/priv-app/$APPS
-else
-  DIR=/system/system_ext/priv-app/$APPS
-fi
+DIR=$SYSTEM_EXT/priv-app/$APPS
 MODDIR=$MODPATH/system/system_ext/priv-app/$APPS
 replace_dir
-if [ "$BOOTMODE" == true ]; then
-  DIR=$MAGISKTMP/mirror/vendor/app/$APPS
-else
-  DIR=/vendor/app/$APPS
-fi
+DIR=$VENDOR/app/$APPS
 MODDIR=$MODPATH/system/vendor/app/$APPS
 replace_dir
-if [ "$BOOTMODE" == true ]; then
-  DIR=$MAGISKTMP/mirror/vendor/euclid/product/app/$APPS
-else
-  DIR=/vendor/euclid/product/app/$APPS
-fi
+DIR=$VENDOR/euclid/product/app/$APPS
 MODDIR=$MODPATH/system/vendor/euclid/product/app/$APPS
 replace_dir
 }
@@ -319,13 +324,8 @@ check_app() {
 if [ "$BOOTMODE" == true ]\
 && [ "`grep_prop hide.parts $OPTIONALS`" == 1 ]; then
   for APPS in $APP; do
-    FILE=`find $MAGISKTMP/mirror/system_root/system\
-               $MAGISKTMP/mirror/system_root/product\
-               $MAGISKTMP/mirror/system_root/system_ext\
-               $MAGISKTMP/mirror/system\
-               $MAGISKTMP/mirror/product\
-               $MAGISKTMP/mirror/system_ext\
-               $MAGISKTMP/mirror/vendor -type f -name $APPS.apk`
+    FILE=`find $SYSTEM $PRODUCT $SYSTEM_EXT $VENDOR\
+               $MY_PRODUCT -type f -name $APPS.apk`
     if [ "$FILE" ]; then
       ui_print "  Checking $APPS.apk"
       ui_print "  Please wait..."
@@ -482,6 +482,31 @@ if echo "$PROP" | grep -Eq n; then
   sed -i 's/#n//g' $FILE
   ui_print " "
 fi
+
+# copy
+NAME=libadspd.so
+APP=MotoWaves
+DIR=`find $MODPATH/system -type d -name $APP`/lib/arm
+cp -f $SYSTEM/lib/$NAME $DIR
+cp -f $VENDOR/lib/$NAME $DIR
+cp -f $ODM/lib/$NAME $DIR
+if [ "$IS64BIT" == true ]; then
+  DIR=`find $MODPATH/system -type d -name $APP`/lib/arm64
+  cp -f $SYSTEM/lib64/$NAME $DIR
+  cp -f $VENDOR/lib64/$NAME $DIR
+  cp -f $ODM/lib64/$NAME $DIR
+fi
+
+# check
+NAME=libc++_shared.so
+for NAMES in $NAME; do
+  FILE=$VENDOR/lib/$NAMES
+  if [ -f $FILE ]; then
+    ui_print "- Detected $NAMES"
+    ui_print " "
+    rm -f $MODPATH/system/vendor/lib/$NAMES
+  fi
+done
 
 # audio rotation
 FILE=$MODPATH/service.sh
