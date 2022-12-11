@@ -19,9 +19,17 @@ fi
 SYSTEM=`realpath $MIRROR/system`
 PRODUCT=`realpath $MIRROR/product`
 VENDOR=`realpath $MIRROR/vendor`
-SYSTEM_EXT=`realpath $MIRROR/system/system_ext`
-ODM=`realpath /odm`
-MY_PRODUCT=`realpath /my_product`
+SYSTEM_EXT=`realpath $MIRROR/system_ext`
+if [ -d $MIRROR/odm ]; then
+  ODM=`realpath $MIRROR/odm`
+else
+  ODM=`realpath /odm`
+fi
+if [ -d $MIRROR/my_product ]; then
+  MY_PRODUCT=`realpath $MIRROR/my_product`
+else
+  MY_PRODUCT=`realpath /my_product`
+fi
 
 # optionals
 OPTIONALS=/sdcard/optionals.prop
@@ -87,7 +95,8 @@ fi
 # sepolicy.rule
 FILE=$MODPATH/sepolicy.sh
 DES=$MODPATH/sepolicy.rule
-if [ -f $FILE ] && [ "`grep_prop sepolicy.sh $OPTIONALS`" != 1 ]; then
+if [ "`grep_prop sepolicy.sh $OPTIONALS`" != 1 ]\
+&& [ -f $FILE ]; then
   mv -f $FILE $DES
   sed -i 's/magiskpolicy --live "//g' $DES
   sed -i 's/"//g' $DES
@@ -148,16 +157,16 @@ fi
 
 # function
 extract_lib() {
-  for APPS in $APP; do
-    ui_print "- Extracting..."
-    FILE=`find $MODPATH/system -type f -name $APPS.apk`
-    DIR=`find $MODPATH/system -type d -name $APPS`/lib/$ARCH
-    mkdir -p $DIR
-    rm -rf $TMPDIR/*
-    unzip -d $TMPDIR -o $FILE $DES
-    cp -f $TMPDIR/$DES $DIR
-    ui_print " "
-  done
+for APPS in $APP; do
+  ui_print "- Extracting..."
+  FILE=`find $MODPATH/system -type f -name $APPS.apk`
+  DIR=`find $MODPATH/system -type d -name $APPS`/lib/$ARCH
+  mkdir -p $DIR
+  rm -rf $TMPDIR/*
+  unzip -d $TMPDIR -o $FILE $DES
+  cp -f $TMPDIR/$DES $DIR
+  ui_print " "
+done
 }
 
 # extract
@@ -320,128 +329,14 @@ DIR=$VENDOR/euclid/product/app/$APPS
 MODDIR=$MODPATH/system/vendor/euclid/product/app/$APPS
 replace_dir
 }
-check_app() {
-if [ "$BOOTMODE" == true ]\
-&& [ "`grep_prop hide.parts $OPTIONALS`" == 1 ]; then
-  for APPS in $APP; do
-    FILE=`find $SYSTEM $PRODUCT $SYSTEM_EXT $VENDOR\
-               $MY_PRODUCT -type f -name $APPS.apk`
-    if [ "$FILE" ]; then
-      ui_print "  Checking $APPS.apk"
-      ui_print "  Please wait..."
-      if grep -Eq $UUID $FILE; then
-        ui_print "  Your $APPS.apk will be hidden"
-        hide_app
-      fi
-    fi
-  done
-fi
-}
-detect_soundfx() {
-if [ "$BOOTMODE" == true ]\
-&& dumpsys media.audio_flinger | grep -Eq $UUID; then
-  ui_print "- $NAME is detected."
-  ui_print "  It may be conflicting with this module."
-  ui_print "  You can type:"
-  ui_print "  disable.dirac=1"
-  ui_print "  inside $OPTIONALS"
-  ui_print "  and reinstall this module if you want to disable it."
-  ui_print " "
-fi
-}
 
 # hide
 APP="`ls $MODPATH/system/priv-app` `ls $MODPATH/system/app`"
 hide_oat
-APP="MusicFX
-     MotoWavesV2
-     WavesServiceV2
-     SoundAlive_80
-     SoundAlive_70"
+APP="MusicFX MotoWavesV2 WavesServiceV2"
 for APPS in $APP; do
   hide_app
 done
-if [ "`grep_prop disable.dirac $OPTIONALS`" == 1 ]\
-&& [ "`grep_prop disable.misoundfx $OPTIONALS`" == 1 ]; then
-  APP=MiSound
-  for APPS in $APP; do
-    hide_app
-  done
-fi
-if [ "`grep_prop disable.dirac $OPTIONALS`" == 1 ]; then
-  APP="Dirac DiracAudioControlService"
-  for APPS in $APP; do
-    hide_app
-  done
-fi
-
-# dirac & misoundfx
-FILE=$MODPATH/.aml.sh
-APP="XiaomiParts ZenfoneParts ZenParts GalaxyParts
-     KharaMeParts DeviceParts PocoParts"
-NAME='dirac soundfx'
-UUID=e069d9e0-8329-11df-9168-0002a5d5c51b
-if [ "`grep_prop disable.dirac $OPTIONALS`" == 1 ]; then
-  ui_print "- $NAME will be disabled"
-  sed -i 's/#2//g' $FILE
-  check_app
-  ui_print " "
-else
-  detect_soundfx
-fi
-FILE=$MODPATH/.aml.sh
-NAME=misoundfx
-UUID=5b8e36a5-144a-4c38-b1d7-0002a5d5c51b
-if [ "`grep_prop disable.misoundfx $OPTIONALS`" == 1 ]; then
-  ui_print "- $NAME will be disabled"
-  sed -i 's/#3//g' $FILE
-  check_app
-  ui_print " "
-else
-  if [ "$BOOTMODE" == true ]\
-  && dumpsys media.audio_flinger | grep -Eq $UUID; then
-    ui_print "- $NAME is detected."
-    ui_print "  It may be conflicting with this module."
-    ui_print "  You can type:"
-    ui_print "  disable.misoundfx=1"
-    ui_print "  inside $OPTIONALS"
-    ui_print "  and reinstall this module if you want to disable it."
-    ui_print " "
-  fi
-fi
-
-# dirac_controller
-FILE=$MODPATH/.aml.sh
-NAME='dirac_controller soundfx'
-UUID=b437f4de-da28-449b-9673-667f8b964304
-if [ "`grep_prop disable.dirac $OPTIONALS`" == 1 ]; then
-  ui_print "- $NAME will be disabled"
-  ui_print " "
-else
-  detect_soundfx
-fi
-
-# dirac_music
-FILE=$MODPATH/.aml.sh
-NAME='dirac_music soundfx'
-UUID=b437f4de-da28-449b-9673-667f8b9643fe
-if [ "`grep_prop disable.dirac $OPTIONALS`" == 1 ]; then
-  ui_print "- $NAME will be disabled"
-  ui_print " "
-else
-  detect_soundfx
-fi
-
-# dirac_gef
-FILE=$MODPATH/.aml.sh
-NAME='dirac_gef soundfx'
-UUID=3799D6D1-22C5-43C3-B3EC-D664CF8D2F0D
-if [ "`grep_prop disable.dirac $OPTIONALS`" == 1 ]; then
-  ui_print "- $NAME will be disabled"
-  ui_print " "
-else
-  detect_soundfx
-fi
 
 # stream mode
 FILE=$MODPATH/.aml.sh
