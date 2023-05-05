@@ -21,10 +21,10 @@
 - Architecture arm64 or arm
 - Android 8 until 11 early builds only (Not all device is supported and Android 11 newer build probably not supported)
 - Magisk Installed
-- Moto Core Magisk Module installed https://github.com/reiryuki/Moto-Core-Magisk-Module
+- Moto Core Magisk Module installed https://github.com/reiryuki/Moto-Core-Magisk-Module except you are in Motorola ROM
 
 ## Installation Guide & Download Link
-- Install Moto Core Magisk Module first: https://github.com/reiryuki/Moto-Core-Magisk-Module
+- Install Moto Core Magisk Module first: https://github.com/reiryuki/Moto-Core-Magisk-Module except you are in Motorola ROM
 - Install this module https://www.pling.com/p/1531761/ via Magisk app or Recovery
 - Install AML Magisk Module https://t.me/androidryukimodsdiscussions/29836 only if using any other audio mod module
 - Reboot
