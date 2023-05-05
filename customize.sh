@@ -1,7 +1,5 @@
 # space
-if [ "$BOOTMODE" == true ]; then
-  ui_print " "
-fi
+ui_print " "
 
 # magisk
 if [ -d /sbin/.magisk ]; then
@@ -33,6 +31,9 @@ fi
 
 # optionals
 OPTIONALS=/sdcard/optionals.prop
+if [ ! -f $OPTIONALS ]; then
+  touch $OPTIONALS
+fi
 
 # info
 MODVER=`grep_prop version $MODPATH/module.prop`
@@ -70,13 +71,14 @@ if [ "$API" -lt $NUM ]; then
   ui_print "! Unsupported SDK $API. You have to upgrade your Android"
   ui_print "  version at least SDK API $NUM to use this module."
   abort
-elif [ "$API" -gt $NUM2 ]; then
-  ui_print "! Unsupported SDK $API. This module is only for SDK API"
-  ui_print "  $NUM2 and bellow."
 else
-  ui_print "- SDK $API"
-  if [ "$API" -lt $NUM2 ]\
-  || [ "`grep_prop waves.mode $OPTIONALS`" == 10 ]; then
+  if [ "$API" -gt $NUM2 ]; then
+    ui_print "! Unsupported SDK $API. This module is only for SDK API"
+    ui_print "  $NUM2 and bellow."
+  else
+    ui_print "- SDK $API"
+  fi
+  if [ "$API" -lt $NUM2 ]; then
     ui_print "  Using legacy version"
     cp -rf $MODPATH/system_10/* $MODPATH/system
   fi
@@ -92,30 +94,83 @@ if [ "$BOOTMODE" != true ]; then
   mount -o rw -t auto /dev/block/bootdevice/by-name/metadata /metadata
 fi
 
-# sepolicy.rule
-FILE=$MODPATH/sepolicy.sh
-DES=$MODPATH/sepolicy.rule
-if [ "`grep_prop sepolicy.sh $OPTIONALS`" != 1 ]\
+# sepolicy
+FILE=$MODPATH/sepolicy.rule
+DES=$MODPATH/sepolicy.pfsd
+if [ "`grep_prop sepolicy.sh $OPTIONALS`" == 1 ]\
 && [ -f $FILE ]; then
   mv -f $FILE $DES
-  sed -i 's/magiskpolicy --live "//g' $DES
-  sed -i 's/"//g' $DES
+fi
+
+# motocore
+if [ ! -d /data/adb/modules_update/MotoCore ]\
+&& [ ! -d /data/adb/modules/MotoCore ]; then
+  ui_print "- This module requires Moto Core Magisk Module installed"
+  ui_print "  except you are in Motorola ROM."
+  ui_print "  Please read the installation guide!"
+  ui_print " "
+else
+  rm -f /data/adb/modules/MotoCore/remove
+  rm -f /data/adb/modules/MotoCore/disable
 fi
 
 # .aml.sh
 mv -f $MODPATH/aml.sh $MODPATH/.aml.sh
 
-# check
-NAME=_ZN7android23sp_report_stack_pointerEv
-FILE=$SYSTEM/lib/libaudioclient.so
-if [ "$API" -ge 30 ]; then
-  ui_print "- Checking $NAME function..."
-  ui_print "  Please wait..."
-  if ! grep -Eq $NAME $FILE; then
-    ui_print "  Using legacy apps"
-    cp -rf $MODPATH/system_10/* $MODPATH/system
+# function
+extract_lib() {
+for APPS in $APP; do
+  FILE=`find $MODPATH/system -type f -name $APPS.apk`
+  if [ -f `dirname $FILE`/extract ]; then
+    rm -f `dirname $FILE`/extract
+    ui_print "- Extracting..."
+    DIR=`dirname $FILE`/lib/$ARCH
+    mkdir -p $DIR
+    rm -rf $TMPDIR/*
+    unzip -d $TMPDIR -o $FILE $DES
+    cp -f $TMPDIR/$DES $DIR
+    ui_print " "
   fi
-  ui_print " "
+done
+}
+
+# extract
+APP=MotoWaves
+if [ "`grep_prop waves.32bit $OPTIONALS`" == 1 ]; then
+  PROP=armeabi-v7a
+else
+  PROP=`getprop ro.product.cpu.abi`
+fi
+DES=lib/$PROP/*
+extract_lib
+
+# extract
+APP=WavesService
+ARCH=arm
+DES=lib/armeabi-v7a/*
+extract_lib
+
+# function
+check_function() {
+ui_print "- Checking"
+ui_print "$NAME"
+ui_print "  function at"
+ui_print "$FILE"
+ui_print "  Please wait..."
+if ! grep -Eq $NAME $FILE; then
+  ui_print "  Using legacy apps"
+  cp -rf $MODPATH/system_10/* $MODPATH/system
+fi
+ui_print " "
+}
+
+# check
+if [ "$API" -ge 30 ]; then
+  NAME=_ZN7android23sp_report_stack_pointerEv
+  TARGET=libandroidaudioeffect_Android11.so
+  LISTS=`strings $MODPATH/system/priv-app/WavesService/lib/arm/$TARGET | grep ^lib | grep .so | sed "s/$TARGET//" | sed 's/libc++_shared.so//'`
+  FILE=`for LIST in $LISTS; do echo $SYSTEM/lib/$LIST; done`
+  check_function
 fi
 rm -rf $MODPATH/system_10
 
@@ -155,44 +210,12 @@ if [ "`grep_prop mod.ui $OPTIONALS`" == 1 ]; then
   ui_print " "
 fi
 
-# function
-extract_lib() {
-for APPS in $APP; do
-  ui_print "- Extracting..."
-  FILE=`find $MODPATH/system -type f -name $APPS.apk`
-  DIR=`find $MODPATH/system -type d -name $APPS`/lib/$ARCH
-  mkdir -p $DIR
-  rm -rf $TMPDIR/*
-  unzip -d $TMPDIR -o $FILE $DES
-  cp -f $TMPDIR/$DES $DIR
-  ui_print " "
-done
-}
-
-# extract
-APP=MotoWaves
-if [ "`grep_prop waves.32bit $OPTIONALS`" == 1 ]; then
-  PROP=armeabi-v7a
-else
-  PROP=`getprop ro.product.cpu.abi`
-fi
-DES=lib/$PROP/*
-extract_lib
-
-# extract
-APP=WavesService
-ARCH=arm
-DES=lib/armeabi-v7a/*
-extract_lib
-
 # cleaning
 ui_print "- Cleaning..."
-PKG="com.motorola.motowaves
-     com.waves.maxxservice
-     com.motorola.motosignature.app"
+PKG=`cat $MODPATH/package.txt`
 if [ "$BOOTMODE" == true ]; then
   for PKGS in $PKG; do
-    RES=`pm uninstall $PKGS`
+    RES=`pm uninstall $PKGS 2>/dev/null`
   done
 fi
 rm -rf /metadata/magisk/$MODID

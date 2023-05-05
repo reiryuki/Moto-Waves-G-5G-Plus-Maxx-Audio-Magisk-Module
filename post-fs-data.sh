@@ -9,9 +9,9 @@ exec 2>$MODPATH/debug-pfsd.log
 set -x
 
 # run
-FILE=$MODPATH/sepolicy.sh
+FILE=$MODPATH/sepolicy.pfsd
 if [ -f $FILE ]; then
-  . $FILE
+  magiskpolicy --live --apply $FILE
 fi
 
 # context
@@ -56,7 +56,6 @@ APK=`find $MOD/*/system -type f -name MotoGametime.apk`
 if [ "$XML" ] && [ ! "$APK" ]; then
   mv -f $XML $MOD
 fi
-rm -f /data/adb/modules/*/system/app/MotoSignatureApp/.replace
 
 # directory
 SKU=`ls $VETC/audio | grep sku_`
