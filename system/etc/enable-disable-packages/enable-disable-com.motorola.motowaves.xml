@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <enable-disable-package>
-    <package-disable-enable-criteria package="com.motorola.motowaves" default_action="disable">
+    <package-disable-enable-criteria package="com.motorola.motowaves" default_action="enable">
         <criteria action="enable" prop="persist.vendor.audio_fx.force_waves_enabled" prop_value="true"/>
-        <criteria action="disable" channel="vzw"/>
-        <criteria action="disable" channel="vzwpre"/>
+        <criteria action="enable" channel="vzw"/>
+        <criteria action="enable" channel="vzwpre"/>
         <criteria action="enable" prop="persist.vendor.audio_fx.waves.processing" prop_value="true"/>
     </package-disable-enable-criteria>
 </enable-disable-package>
