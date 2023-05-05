@@ -1,8 +1,8 @@
 # Moto Waves G 5G Plus Maxx Audio Magisk Module
 
 ## DISCLAIMER
-- Waves apps and blobs are owned by Waves™.
-- The MIT license specified here is for the Magisk Module, not for Waves apps and blobs.
+- Motorola and Waves apps and blobs are owned by Motorola™ and Waves™.
+- The MIT license specified here is for the Magisk Module, not for Motorola and Waves apps and blobs.
 
 ## Descriptions
 - Equalizer soundfx ported from Motorola Moto G 5G Plus (nairo) and integrated as a Magisk Module for all supported and rooted devices with Magisk
