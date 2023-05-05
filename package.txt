@@ -1,3 +1,2 @@
 com.motorola.motowaves
 com.waves.maxxservice
-com.motorola.motosignature.app
