@@ -1,39 +1,16 @@
 # space
 ui_print " "
 
-# magisk
-if [ -d /sbin/.magisk ]; then
-  MAGISKTMP=/sbin/.magisk
-else
-  MAGISKTMP=`realpath /dev/*/.magisk`
+# log
+if [ "$BOOTMODE" != true ]; then
+  FILE=/sdcard/$MODID\_recovery.log
+  ui_print "- Log will be saved at $FILE"
+  exec 2>$FILE
+  ui_print " "
 fi
 
-# path
-if [ "$BOOTMODE" == true ]; then
-  MIRROR=$MAGISKTMP/mirror
-else
-  MIRROR=
-fi
-SYSTEM=`realpath $MIRROR/system`
-PRODUCT=`realpath $MIRROR/product`
-VENDOR=`realpath $MIRROR/vendor`
-SYSTEM_EXT=`realpath $MIRROR/system_ext`
-if [ -d $MIRROR/odm ]; then
-  ODM=`realpath $MIRROR/odm`
-else
-  ODM=`realpath /odm`
-fi
-if [ -d $MIRROR/my_product ]; then
-  MY_PRODUCT=`realpath $MIRROR/my_product`
-else
-  MY_PRODUCT=`realpath /my_product`
-fi
-
-# optionals
-OPTIONALS=/sdcard/optionals.prop
-if [ ! -f $OPTIONALS ]; then
-  touch $OPTIONALS
-fi
+# run
+. $MODPATH/function.sh
 
 # info
 MODVER=`grep_prop version $MODPATH/module.prop`
@@ -41,13 +18,21 @@ MODVERCODE=`grep_prop versionCode $MODPATH/module.prop`
 ui_print " ID=$MODID"
 ui_print " Version=$MODVER"
 ui_print " VersionCode=$MODVERCODE"
-ui_print " MagiskVersion=$MAGISK_VER"
-ui_print " MagiskVersionCode=$MAGISK_VER_CODE"
+if [ "$KSU" == true ]; then
+  ui_print " KSUVersion=$KSU_VER"
+  ui_print " KSUVersionCode=$KSU_VER_CODE"
+  ui_print " KSUKernelVersionCode=$KSU_KERNEL_VER_CODE"
+  sed -i 's|#k||g' $MODPATH/post-fs-data.sh
+else
+  ui_print " MagiskVersion=$MAGISK_VER"
+  ui_print " MagiskVersionCode=$MAGISK_VER_CODE"
+fi
 ui_print " "
 
 # architecture
 if [ "$ARCH" == arm64 ] || [ "$ARCH" == arm ]; then
   if [ "`grep_prop waves.32bit $OPTIONALS`" == 1 ]; then
+    ABI=armeabi-v7a
     ARCH=arm
     IS64BIT=false
   fi
@@ -61,7 +46,7 @@ fi
 
 # bit
 if [ "$IS64BIT" != true ]; then
-  rm -rf `find $MODPATH/system -type d -name *64`
+  rm -rf `find $MODPATH -type d -name *64*`
 fi
 
 # sdk
@@ -86,22 +71,6 @@ fi
 ui_print " "
 rm -rf $MODPATH/system_10
 
-# mount
-if [ "$BOOTMODE" != true ]; then
-  mount -o rw -t auto /dev/block/bootdevice/by-name/cust /vendor
-  mount -o rw -t auto /dev/block/bootdevice/by-name/vendor /vendor
-  mount -o rw -t auto /dev/block/bootdevice/by-name/persist /persist
-  mount -o rw -t auto /dev/block/bootdevice/by-name/metadata /metadata
-fi
-
-# sepolicy
-FILE=$MODPATH/sepolicy.rule
-DES=$MODPATH/sepolicy.pfsd
-if [ "`grep_prop sepolicy.sh $OPTIONALS`" == 1 ]\
-&& [ -f $FILE ]; then
-  mv -f $FILE $DES
-fi
-
 # motocore
 if [ ! -d /data/adb/modules_update/MotoCore ]\
 && [ ! -d /data/adb/modules/MotoCore ]; then
@@ -114,83 +83,53 @@ else
   rm -f /data/adb/modules/MotoCore/disable
 fi
 
+# recovery
+mount_partitions_in_recovery
+
+# magisk
+magisk_setup
+
+# path
+SYSTEM=`realpath $MIRROR/system`
+if [ "$BOOTMODE" == true ]; then
+  if [ ! -d $MIRROR/vendor ]; then
+    mount_vendor_to_mirror
+  fi
+  if [ ! -d $MIRROR/product ]; then
+    mount_product_to_mirror
+  fi
+  if [ ! -d $MIRROR/system_ext ]; then
+    mount_system_ext_to_mirror
+  fi
+  if [ ! -d $MIRROR/odm ]; then
+    mount_odm_to_mirror
+  fi
+  if [ ! -d $MIRROR/my_product ]; then
+    mount_my_product_to_mirror
+  fi
+fi
+VENDOR=`realpath $MIRROR/vendor`
+PRODUCT=`realpath $MIRROR/product`
+SYSTEM_EXT=`realpath $MIRROR/system_ext`
+ODM=`realpath $MIRROR/odm`
+MY_PRODUCT=`realpath $MIRROR/my_product`
+
+# optionals
+OPTIONALS=/sdcard/optionals.prop
+if [ ! -f $OPTIONALS ]; then
+  touch $OPTIONALS
+fi
+
+# sepolicy
+FILE=$MODPATH/sepolicy.rule
+DES=$MODPATH/sepolicy.pfsd
+if [ "`grep_prop sepolicy.sh $OPTIONALS`" == 1 ]\
+&& [ -f $FILE ]; then
+  mv -f $FILE $DES
+fi
+
 # .aml.sh
 mv -f $MODPATH/aml.sh $MODPATH/.aml.sh
-
-# function
-extract_lib() {
-for APPS in $APP; do
-  FILE=`find $MODPATH/system -type f -name $APPS.apk`
-  if [ -f `dirname $FILE`/extract ]; then
-    rm -f `dirname $FILE`/extract
-    ui_print "- Extracting..."
-    DIR=`dirname $FILE`/lib/$ARCH
-    mkdir -p $DIR
-    rm -rf $TMPDIR/*
-    unzip -d $TMPDIR -o $FILE $DES
-    cp -f $TMPDIR/$DES $DIR
-    ui_print " "
-  fi
-done
-}
-
-# extract
-APP=MotoWaves
-if [ "`grep_prop waves.32bit $OPTIONALS`" == 1 ]; then
-  PROP=armeabi-v7a
-else
-  PROP=`getprop ro.product.cpu.abi`
-fi
-DES=lib/$PROP/*
-extract_lib
-
-# extract
-APP=WavesService
-ARCH=arm
-DES=lib/armeabi-v7a/*
-extract_lib
-
-# function
-check_function() {
-ui_print "- Checking"
-ui_print "$NAME"
-ui_print "  function at"
-ui_print "$FILE"
-ui_print "  Please wait..."
-if ! grep -Eq $NAME $FILE; then
-  ui_print "  Using legacy apps"
-  cp -rf $MODPATH/system_10/* $MODPATH/system
-fi
-ui_print " "
-}
-
-# check
-if [ "$API" -ge 30 ]; then
-  NAME=_ZN7android23sp_report_stack_pointerEv
-  TARGET=libandroidaudioeffect_Android11.so
-  LISTS=`strings $MODPATH/system/priv-app/WavesService/lib/arm/$TARGET | grep ^lib | grep .so | sed "s/$TARGET//" | sed 's/libc++_shared.so//'`
-  FILE=`for LIST in $LISTS; do echo $SYSTEM/lib/$LIST; done`
-  check_function
-fi
-rm -rf $MODPATH/system_10
-
-# config
-if [ "`grep_prop waves.config $OPTIONALS`" == pstar ]; then
-  ui_print "- Using Moto Waves Edge 30 Pro (pstar) config"
-  cp -rf $MODPATH/system_pstar/* $MODPATH/system
-  ui_print " "
-elif [ "`grep_prop waves.config $OPTIONALS`" == nio ]; then
-  ui_print "- Using Moto Waves XT2125-4 (nio) config"
-  cp -rf $MODPATH/system_nio/* $MODPATH/system
-  ui_print " "
-elif [ "`grep_prop waves.config $OPTIONALS`" == racer ]; then
-  ui_print "- Using Moto Waves Edge (racer) config"
-  cp -rf $MODPATH/system_racer/* $MODPATH/system
-  ui_print " "
-fi
-rm -rf $MODPATH/system_pstar
-rm -rf $MODPATH/system_nio
-rm -rf $MODPATH/system_racer
 
 # mod ui
 if [ "`grep_prop mod.ui $OPTIONALS`" == 1 ]; then
@@ -210,32 +149,130 @@ if [ "`grep_prop mod.ui $OPTIONALS`" == 1 ]; then
   ui_print " "
 fi
 
+# function
+extract_lib() {
+for APP in $APPS; do
+  FILE=`find $MODPATH/system -type f -name $APP.apk`
+  if [ -f `dirname $FILE`/extract ]; then
+    rm -f `dirname $FILE`/extract
+    ui_print "- Extracting..."
+    DIR=`dirname $FILE`/lib/"$ARCH"
+    mkdir -p $DIR
+    rm -rf $TMPDIR/*
+    DES=lib/"$ABI"/*
+    unzip -d $TMPDIR -o $FILE $DES
+    cp -f $TMPDIR/$DES $DIR
+    ui_print " "
+  fi
+done
+}
+
+# extract
+APPS=MotoWaves
+extract_lib
+
+# extract
+APPS=WavesService
+ABI=armeabi-v7a
+ARCH=arm
+extract_lib
+
+# function
+check_function() {
+ui_print "- Checking"
+ui_print "$NAME"
+ui_print "  function at"
+ui_print "$FILE"
+ui_print "  Please wait..."
+if ! grep -q $NAME $FILE; then
+  ui_print "  Using legacy apps"
+  cp -rf $MODPATH/system_10/* $MODPATH/system
+fi
+ui_print " "
+}
+
+# check
+if [ "$API" -ge 30 ]; then
+  NAME=_ZN7android23sp_report_stack_pointerEv
+  DES=libandroidaudioeffect_Android11.so
+  FILE=`find $MODPATH/system -type f -name $DES`
+  LISTS=`strings $FILE | grep ^lib | grep .so | sed -e "s|$DES||g" -e 's|libc++_shared.so||g'`
+  FILE=`for LIST in $LISTS; do echo $SYSTEM/lib/$LIST; done`
+  check_function
+fi
+rm -rf $MODPATH/system_10
+
+# remove
+rm -rf `find $MODPATH/system -type d -name WavesService`/lib
+
+# config
+if [ "`grep_prop waves.config $OPTIONALS`" == pstar ]; then
+  ui_print "- Using Moto Waves Edge 30 Pro (pstar) config"
+  cp -rf $MODPATH/system_pstar/* $MODPATH/system
+  ui_print " "
+elif [ "`grep_prop waves.config $OPTIONALS`" == nio ]; then
+  ui_print "- Using Moto Waves XT2125-4 (nio) config"
+  cp -rf $MODPATH/system_nio/* $MODPATH/system
+  ui_print " "
+elif [ "`grep_prop waves.config $OPTIONALS`" == racer ]; then
+  ui_print "- Using Moto Waves Edge (racer) config"
+  cp -rf $MODPATH/system_racer/* $MODPATH/system
+  ui_print " "
+fi
+rm -rf $MODPATH/system_pstar
+rm -rf $MODPATH/system_nio
+rm -rf $MODPATH/system_racer
+
 # cleaning
 ui_print "- Cleaning..."
-PKG=`cat $MODPATH/package.txt`
+PKGS=`cat $MODPATH/package.txt`
 if [ "$BOOTMODE" == true ]; then
-  for PKGS in $PKG; do
-    RES=`pm uninstall $PKGS 2>/dev/null`
+  for PKG in $PKGS; do
+    RES=`pm uninstall $PKG 2>/dev/null`
   done
 fi
-rm -rf /metadata/magisk/$MODID
-rm -rf /mnt/vendor/persist/magisk/$MODID
-rm -rf /persist/magisk/$MODID
-rm -rf /data/unencrypted/magisk/$MODID
-rm -rf /cache/magisk/$MODID
+remove_sepolicy_rule
 ui_print " "
-
 # power save
 FILE=$MODPATH/system/etc/sysconfig/*
 if [ "`grep_prop power.save $OPTIONALS`" == 1 ]; then
   ui_print "- $MODNAME will not be allowed in power save."
   ui_print "  It may save your battery but decreasing $MODNAME performance."
-  for PKGS in $PKG; do
-    sed -i "s/<allow-in-power-save package=\"$PKGS\"\/>//g" $FILE
-    sed -i "s/<allow-in-power-save package=\"$PKGS\" \/>//g" $FILE
+  for PKG in $PKGS; do
+    sed -i "s|<allow-in-power-save package=\"$PKG\"/>||g" $FILE
+    sed -i "s|<allow-in-power-save package=\"$PKG\" />||g" $FILE
   done
   ui_print " "
 fi
+
+# function
+conflict() {
+for NAME in $NAMES; do
+  DIR=/data/adb/modules_update/$NAME
+  if [ -f $DIR/uninstall.sh ]; then
+    sh $DIR/uninstall.sh
+  fi
+  rm -rf $DIR
+  DIR=/data/adb/modules/$NAME
+  rm -f $DIR/update
+  touch $DIR/remove
+  FILE=/data/adb/modules/$NAME/uninstall.sh
+  if [ -f $FILE ]; then
+    sh $FILE
+    rm -f $FILE
+  fi
+  rm -rf /metadata/magisk/$NAME
+  rm -rf /mnt/vendor/persist/magisk/$NAME
+  rm -rf /persist/magisk/$NAME
+  rm -rf /data/unencrypted/magisk/$NAME
+  rm -rf /cache/magisk/$NAME
+  rm -rf /cust/magisk/$NAME
+done
+}
+
+# conflict
+NAMES=maxxaudio
+conflict
 
 # function
 cleanup() {
@@ -252,11 +289,11 @@ fi
 DIR=/data/adb/modules/$MODID
 FILE=$DIR/module.prop
 if [ "`grep_prop data.cleanup $OPTIONALS`" == 1 ]; then
-  sed -i 's/^data.cleanup=1/data.cleanup=0/' $OPTIONALS
+  sed -i 's|^data.cleanup=1|data.cleanup=0|g' $OPTIONALS
   ui_print "- Cleaning-up $MODID data..."
   cleanup
   ui_print " "
-elif [ -d $DIR ] && ! grep -Eq "$MODNAME" $FILE; then
+elif [ -d $DIR ] && ! grep -q "$MODNAME" $FILE; then
   ui_print "- Different version detected"
   ui_print "  Cleaning-up $MODID data..."
   cleanup
@@ -265,29 +302,28 @@ fi
 
 # function
 permissive_2() {
-sed -i '1i\
-SELINUX=`getenforce`\
-if [ "$SELINUX" == Enforcing ]; then\
-  magiskpolicy --live "permissive *"\
-fi\' $MODPATH/post-fs-data.sh
+sed -i 's|#2||g' $MODPATH/post-fs-data.sh
 }
 permissive() {
-SELINUX=`getenforce`
-if [ "$SELINUX" == Enforcing ]; then
-  setenforce 0
-  SELINUX=`getenforce`
-  if [ "$SELINUX" == Enforcing ]; then
+FILE=/sys/fs/selinux/enforce
+SELINUX=`cat $FILE`
+if [ "$SELINUX" == 1 ]; then
+  if ! setenforce 0; then
+    echo 0 > $FILE
+  fi
+  SELINUX=`cat $FILE`
+  if [ "$SELINUX" == 1 ]; then
     ui_print "  Your device can't be turned to Permissive state."
     ui_print "  Using Magisk Permissive mode instead."
     permissive_2
   else
-    setenforce 1
-    sed -i '1i\
-SELINUX=`getenforce`\
-if [ "$SELINUX" == Enforcing ]; then\
-  setenforce 0\
-fi\' $MODPATH/post-fs-data.sh
+    if ! setenforce 1; then
+      echo 1 > $FILE
+    fi
+    sed -i 's|#1||g' $MODPATH/post-fs-data.sh
   fi
+else
+  sed -i 's|#1||g' $MODPATH/post-fs-data.sh
 fi
 }
 
@@ -306,98 +342,140 @@ fi
 
 # function
 hide_oat() {
-for APPS in $APP; do
-  mkdir -p `find $MODPATH/system -type d -name $APPS`/oat
-  touch `find $MODPATH/system -type d -name $APPS`/oat/.replace
+for APP in $APPS; do
+  REPLACE="$REPLACE
+  `find $MODPATH/system -type d -name $APP | sed "s|$MODPATH||g"`/oat"
 done
 }
 replace_dir() {
 if [ -d $DIR ]; then
-  mkdir -p $MODDIR
-  touch $MODDIR/.replace
+  REPLACE="$REPLACE $MODDIR"
 fi
 }
 hide_app() {
-DIR=$SYSTEM/app/$APPS
-MODDIR=$MODPATH/system/app/$APPS
-replace_dir
-DIR=$SYSTEM/priv-app/$APPS
-MODDIR=$MODPATH/system/priv-app/$APPS
-replace_dir
-DIR=$PRODUCT/app/$APPS
-MODDIR=$MODPATH/system/product/app/$APPS
-replace_dir
-DIR=$PRODUCT/priv-app/$APPS
-MODDIR=$MODPATH/system/product/priv-app/$APPS
-replace_dir
-DIR=$MY_PRODUCT/app/$APPS
-MODDIR=$MODPATH/system/product/app/$APPS
-replace_dir
-DIR=$MY_PRODUCT/priv-app/$APPS
-MODDIR=$MODPATH/system/product/priv-app/$APPS
-replace_dir
-DIR=$PRODUCT/preinstall/$APPS
-MODDIR=$MODPATH/system/product/preinstall/$APPS
-replace_dir
-DIR=$SYSTEM_EXT/app/$APPS
-MODDIR=$MODPATH/system/system_ext/app/$APPS
-replace_dir
-DIR=$SYSTEM_EXT/priv-app/$APPS
-MODDIR=$MODPATH/system/system_ext/priv-app/$APPS
-replace_dir
-DIR=$VENDOR/app/$APPS
-MODDIR=$MODPATH/system/vendor/app/$APPS
-replace_dir
-DIR=$VENDOR/euclid/product/app/$APPS
-MODDIR=$MODPATH/system/vendor/euclid/product/app/$APPS
-replace_dir
+for APP in $APPS; do
+  DIR=$SYSTEM/app/$APP
+  MODDIR=/system/app/$APP
+  replace_dir
+  DIR=$SYSTEM/priv-app/$APP
+  MODDIR=/system/priv-app/$APP
+  replace_dir
+  DIR=$PRODUCT/app/$APP
+  MODDIR=/system/product/app/$APP
+  replace_dir
+  DIR=$PRODUCT/priv-app/$APP
+  MODDIR=/system/product/priv-app/$APP
+  replace_dir
+  DIR=$MY_PRODUCT/app/$APP
+  MODDIR=/system/product/app/$APP
+  replace_dir
+  DIR=$MY_PRODUCT/priv-app/$APP
+  MODDIR=/system/product/priv-app/$APP
+  replace_dir
+  DIR=$PRODUCT/preinstall/$APP
+  MODDIR=/system/product/preinstall/$APP
+  replace_dir
+  DIR=$SYSTEM_EXT/app/$APP
+  MODDIR=/system/system_ext/app/$APP
+  replace_dir
+  DIR=$SYSTEM_EXT/priv-app/$APP
+  MODDIR=/system/system_ext/priv-app/$APP
+  replace_dir
+  DIR=$VENDOR/app/$APP
+  MODDIR=/system/vendor/app/$APP
+  replace_dir
+  DIR=$VENDOR/euclid/product/app/$APP
+  MODDIR=/system/vendor/euclid/product/app/$APP
+  replace_dir
+done
 }
 
 # hide
-APP="`ls $MODPATH/system/priv-app` `ls $MODPATH/system/app`"
+APPS="`ls $MODPATH/system/priv-app` `ls $MODPATH/system/app`"
 hide_oat
-APP="MusicFX MotoWavesV2 WavesServiceV2"
-for APPS in $APP; do
-  hide_app
-done
+APPS="MusicFX MotoWavesV2 WavesServiceV2"
+hide_app
 
 # stream mode
 FILE=$MODPATH/.aml.sh
 PROP=`grep_prop stream.mode $OPTIONALS`
-if echo "$PROP" | grep -Eq m; then
+if echo "$PROP" | grep -q m; then
   ui_print "- Activating music stream..."
-  sed -i 's/#m//g' $FILE
-  sed -i 's/musicstream=/musicstream=true/g' $MODPATH/acdb.conf
+  sed -i 's|#m||g' $FILE
+  sed -i 's|musicstream=|musicstream=true|g' $MODPATH/acdb.conf
   ui_print " "
 else
-  APP=AudioFX
-  for APPS in $APP; do
-    hide_app
-  done
+  APPS=AudioFX
+  hide_app
 fi
-if echo "$PROP" | grep -Eq r; then
+if echo "$PROP" | grep -q r; then
   ui_print "- Activating ring stream..."
-  sed -i 's/#r//g' $FILE
+  sed -i 's|#r||g' $FILE
   ui_print " "
 fi
-if echo "$PROP" | grep -Eq a; then
+if echo "$PROP" | grep -q a; then
   ui_print "- Activating alarm stream..."
-  sed -i 's/#a//g' $FILE
+  sed -i 's|#a||g' $FILE
   ui_print " "
 fi
-if echo "$PROP" | grep -Eq s; then
+if echo "$PROP" | grep -q s; then
   ui_print "- Activating system stream..."
-  sed -i 's/#s//g' $FILE
+  sed -i 's|#s||g' $FILE
   ui_print " "
 fi
-if echo "$PROP" | grep -Eq v; then
+if echo "$PROP" | grep -q v; then
   ui_print "- Activating voice_call stream..."
-  sed -i 's/#v//g' $FILE
+  sed -i 's|#v||g' $FILE
   ui_print " "
 fi
-if echo "$PROP" | grep -Eq n; then
+if echo "$PROP" | grep -q n; then
   ui_print "- Activating notification stream..."
-  sed -i 's/#n//g' $FILE
+  sed -i 's|#n||g' $FILE
+  ui_print " "
+fi
+if echo "$PROP" | grep -q b; then
+  ui_print "- Activating bluetooth_sco stream..."
+  sed -i 's|#b||g' $FILE
+  ui_print " "
+fi
+if echo "$PROP" | grep -q f; then
+  ui_print "- Activating dtmf stream..."
+  sed -i 's|#f||g' $FILE
+  ui_print " "
+fi
+if echo "$PROP" | grep -q e; then
+  ui_print "- Activating enforced_audible stream..."
+  sed -i 's|#e||g' $FILE
+  ui_print " "
+fi
+if echo "$PROP" | grep -q y; then
+  ui_print "- Activating accessibility stream..."
+  sed -i 's|#y||g' $FILE
+  ui_print " "
+fi
+if echo "$PROP" | grep -q t; then
+  ui_print "- Activating tts stream..."
+  sed -i 's|#t||g' $FILE
+  ui_print " "
+fi
+if echo "$PROP" | grep -q i; then
+  ui_print "- Activating assistant stream..."
+  sed -i 's|#i||g' $FILE
+  ui_print " "
+fi
+if echo "$PROP" | grep -q c; then
+  ui_print "- Activating call_assistant stream..."
+  sed -i 's|#c||g' $FILE
+  ui_print " "
+fi
+if echo "$PROP" | grep -q p; then
+  ui_print "- Activating patch stream..."
+  sed -i 's|#p||g' $FILE
+  ui_print " "
+fi
+if echo "$PROP" | grep -q g; then
+  ui_print "- Activating rerouting stream..."
+  sed -i 's|#g||g' $FILE
   ui_print " "
 fi
 
@@ -416,20 +494,20 @@ if [ "$IS64BIT" == true ]; then
 fi
 
 # check
-NAME=libc++_shared.so
-for NAMES in $NAME; do
-  FILE=$VENDOR/lib/$NAMES
+NAMES=libc++_shared.so
+for NAME in $NAMES; do
+  FILE=$VENDOR/lib/$NAME
   if [ -f $FILE ]; then
-    ui_print "- Detected $NAMES"
+    ui_print "- Detected $NAME"
     ui_print " "
-    rm -f $MODPATH/system/vendor/lib/$NAMES
+    rm -f $MODPATH/system/vendor/lib/$NAME
   fi
 done
 
 # audio rotation
 FILE=$MODPATH/service.sh
 if [ "`grep_prop audio.rotation $OPTIONALS`" == 1 ]; then
-  ui_print "- Activating ro.audio.monitorRotation=true"
+  ui_print "- Enables ro.audio.monitorRotation=true"
   sed -i '1i\
 resetprop ro.audio.monitorRotation true' $FILE
   ui_print " "
@@ -438,27 +516,31 @@ fi
 # raw
 FILE=$MODPATH/.aml.sh
 if [ "`grep_prop disable.raw $OPTIONALS`" == 0 ]; then
-  ui_print "- Not disabling Ultra Low Latency playback (RAW)"
+  ui_print "- Not disables Ultra Low Latency playback (RAW)"
   ui_print " "
 else
   sed -i 's/#u//g' $FILE
 fi
 
-# other
-FILE=$MODPATH/service.sh
-if [ "`grep_prop other.etc $OPTIONALS`" == 1 ]; then
-  ui_print "- Activating other etc files bind mount..."
-  sed -i 's/#p//g' $FILE
-  ui_print " "
+# run
+. $MODPATH/copy.sh
+. $MODPATH/.aml.sh
+
+# unmount
+if [ "$BOOTMODE" == true ] && [ ! "$MAGISKPATH" ]; then
+  unmount_mirror
 fi
 
-# permission
-ui_print "- Setting permission..."
-DIR=`find $MODPATH/system/vendor -type d`
-for DIRS in $DIR; do
-  chown 0.2000 $DIRS
-done
-ui_print " "
+
+
+
+
+
+
+
+
+
+
 
 
 

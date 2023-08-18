@@ -1,21 +1,25 @@
 mount -o rw,remount /data
-if [ ! "$MODPATH" ]; then
-  MODPATH=${0%/*}
-fi
-if [ ! "$MODID" ]; then
-  MODID=`echo "$MODPATH" | sed 's|/data/adb/modules/||' | sed 's|/data/adb/modules_update/||'`
-fi
+[ -z $MODPATH ] && MODPATH=${0%/*}
+[ -z $MODID ] && MODID=`basename "$MODPATH"`
+
+# log
+exec 2>/data/media/0/$MODID\_uninstall.log
+set -x
+
+# run
+. $MODPATH/function.sh
 
 # cleaning
-APP="`ls $MODPATH/system/priv-app` `ls $MODPATH/system/app`"
-for APPS in $APP; do
-  rm -f `find /data/system/package_cache -type f -name *$APPS*`
-  rm -f `find /data/dalvik-cache /data/resource-cache -type f -name *$APPS*.apk`
+APPS="`ls $MODPATH/system/priv-app` `ls $MODPATH/system/app`"
+for APP in $APPS; do
+  rm -f `find /data/system/package_cache -type f -name *$APP*`
+  rm -f `find /data/dalvik-cache /data/resource-cache -type f -name *$APP*.apk`
 done
-PKG=`cat $MODPATH/package.txt`
-for PKGS in $PKG; do
-  rm -rf /data/user*/*/$PKGS
+PKGS=`cat $MODPATH/package.txt`
+for PKG in $PKGS; do
+  rm -rf /data/user*/*/$PKG
 done
+remove_sepolicy_rule
 rm -rf /data/waves
 resetprop -p --delete persist.vendor.audio_fx.current
 resetprop -p --delete persist.vendor.audio_fx.waves.maxxsense
@@ -23,5 +27,13 @@ resetprop -p --delete persist.vendor.audio_fx.waves.processing
 resetprop -p --delete persist.vendor.audio_fx.waves.proc_twks
 resetprop -p --delete persist.vendor.audio_fx.waves.systrace
 resetprop -p --delete persist.vendor.audio_fx.force_waves_enabled
+
+
+
+
+
+
+
+
 
 

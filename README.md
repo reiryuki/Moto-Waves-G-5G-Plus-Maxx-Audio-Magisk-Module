@@ -1,11 +1,11 @@
-# Moto Waves G 5G Plus Maxx Audio Magisk Module
+# Moto Waves G 5G Plus Magisk Module
 
 ## DISCLAIMER
 - Motorola and Waves apps and blobs are owned by Motorola™ and Waves™.
-- The MIT license specified here is for the Magisk Module, not for Motorola and Waves apps and blobs.
+- The MIT license specified here is for the Magisk Module only, not for Motorola and Waves apps and blobs.
 
 ## Descriptions
-- Equalizer soundfx ported from Motorola Moto G 5G Plus (nairo) and integrated as a Magisk Module for all supported and rooted devices with Magisk
+- Equalizer soundfx ported from Motorola G 5G Plus (nairo) and integrated as a Magisk Module for all supported and rooted devices with Magisk
 - Global type soundfx
 
 ## Sources
@@ -20,14 +20,16 @@
 ## Requirements
 - Architecture arm64 or arm
 - Android 8 until 11 early builds only (Not all device is supported and Android 11 newer build probably not supported)
-- Magisk Installed
+- Magisk or KernelSU installed
 - Moto Core Magisk Module installed https://github.com/reiryuki/Moto-Core-Magisk-Module except you are in Motorola ROM
 
 ## Installation Guide & Download Link
 - Install Moto Core Magisk Module first: https://github.com/reiryuki/Moto-Core-Magisk-Module except you are in Motorola ROM
-- Install this module https://www.pling.com/p/1531761/ via Magisk app or Recovery
+- Install this module https://www.pling.com/p/1531761/ via Magisk app or KernelSU app or Recovery if Magisk installed
 - Install AML Magisk Module https://t.me/androidryukimodsdiscussions/29836 only if using any other audio mod module
 - Reboot
+- If you are using KernelSU, you need to allow superuser list manually all package name listed in package.txt (and your home launcher app also) (enable show system apps) and reboot after
+- If you are using SUList, you need to allow list manually your home launcher app (enable show system apps) and reboot after
 - Open Moto Audio app via quick settings and tap 'Show icon in the app tray' to show Moto Audio app icon launcher
 - Tap 'About' then tap multiple times the image if you want to disable FX for loudspeaker
 
@@ -50,7 +52,7 @@
 - You can contribute ideas about this Magisk Module here: https://t.me/androidappsportdevelopment
 
 ## Thanks for Donations
-- This Magisk Module is always will be free but you can however show us that you are care by making a donations:
+This Magisk Module is always will be free but you can however show us that you are care by making a donations:
 - https://ko-fi.com/reiryuki
 - https://www.paypal.me/reiryuki
 - https://t.me/androidryukimodsdiscussions/2619
