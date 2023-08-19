@@ -2,5 +2,8 @@
 <permissions>
     <privapp-permissions package="com.motorola.motowaves">
         <permission name="android.permission.INTERACT_ACROSS_USERS"/>
+        <permission name="com.motorola.permission.BIND_EXPERIENCE"/>
+        <permission name="com.motorola.gamemode.permission.LAUNCH_GAMEMODE"/>
+        <permission name="com.motorola.permission.ACCESS_CHECKIN"/>
     </privapp-permissions>
 </permissions>
