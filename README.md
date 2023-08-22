@@ -10,6 +10,8 @@
 
 ## Sources
 - https://dumps.tadiphone.dev/dumps/motorola/nairo msi-user-11-RPN31.Q4U-39-27-5-20ead-release-keys
+- system_10: https://dumps.tadiphone.dev/dumps/motorola/nairo msi-user-10-QP1A.191005.002-2a371-release-keys
+- MotoWaves.apk system_10: https://play.google.com/store/apps/details?id=com.motorola.motowaves
 - system_nio: https://dumps.tadiphone.dev/dumps/motorola/nio msi_prc-user-11-RRN31.Q3-1-11-1-919e2-release-keys
 - system_pstar: https://dumps.tadiphone.dev/dumps/motorola/pstar msi-user-11-RRAS31.Q3-19-86-4-01582-release-keys
 - system_racer: https://dumps.tadiphone.dev/dumps/motorola/racer msi-user-11-RPD31.Q4U-39-26-4-3c874-release-keys
