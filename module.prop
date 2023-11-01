@@ -1,7 +1,7 @@
 id=MotoWaves
 name=Moto Waves G 5G Plus
-version=v6.9
-versionCode=59
+version=v6.10
+versionCode=60
 author=Rei Ryuki the Fixer
 description=An equalizer global type soundfx ported from Motorola G 5G Plus (nairo) for any Android 8 until 11 (early builds only), architecture arm64 and arm.
 

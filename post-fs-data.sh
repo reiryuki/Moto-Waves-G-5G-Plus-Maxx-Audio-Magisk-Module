@@ -97,13 +97,6 @@ if [ ! -d $DIR ]; then
   chown 1013.1013 $DIR
 fi
 
-# cleaning
-FILE=$MODPATH/cleaner.sh
-if [ -f $FILE ]; then
-  . $FILE
-  rm -f $FILE
-fi
-
 # permission
 DIRS=`find $MODPATH/vendor\
            $MODPATH/system/vendor -type d`
@@ -153,7 +146,12 @@ if ! grep delta /data/adb/magisk/util_functions.sh; then
   mount_helper
 fi
 
-
+# cleaning
+FILE=$MODPATH/cleaner.sh
+if [ -f $FILE ]; then
+  . $FILE
+  mv -f $FILE $FILE\.txt
+fi
 
 
 

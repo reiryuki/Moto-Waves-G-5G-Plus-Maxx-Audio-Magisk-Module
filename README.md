@@ -20,7 +20,7 @@
 - https://reiryuki.blogspot.com/2020/09/motorola-waves-maxx-audio-fx-magisk.html?m=1
 
 ## Requirements
-- Architecture arm64 or arm
+- ARM architecture or ARM64 architecture with 32 bit library support
 - Android 8 until 11 early builds only (Not all device is supported and Android 11 newer build probably not supported)
 - Magisk or KernelSU installed
 - Moto Core Magisk Module installed https://github.com/reiryuki/Moto-Core-Magisk-Module except you are in Motorola ROM
@@ -36,10 +36,10 @@
 - Tap 'About' then tap multiple times the image if you want to disable FX for loudspeaker
 
 ## Optionals & Troubleshootings
-- https://t.me/androidryukimodsdiscussions/60861
-- https://t.me/androidryukimodsdiscussions/29836
 - https://t.me/androidryukimodsdiscussions/3081
-- https://t.me/androidryukimodsdiscussions/26764
+- Global: https://t.me/androidryukimodsdiscussions/60861
+- Global: https://t.me/androidryukimodsdiscussions/29836
+- Stream: https://t.me/androidryukimodsdiscussions/26764
 
 ## Support & Bug Report
 - https://t.me/androidryukimodsdiscussions/2618
