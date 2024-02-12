@@ -9,7 +9,7 @@
 - Global type soundfx
 
 ## Sources
-- https://dumps.tadiphone.dev/dumps/motorola/nairo msi-user-11-RPN31.Q4U-39-27-5-20ead-release-keys
+- https://dumps.tadiphone.dev/dumps/motorola/nairo msi-user-11-RPNS31.Q4U-39-27-9-2-8-cd477-release-keys
 - system_10: https://dumps.tadiphone.dev/dumps/motorola/nairo msi-user-10-QP1A.191005.002-2a371-release-keys
 - MotoWaves.apk system_10: https://play.google.com/store/apps/details?id=com.motorola.motowaves
 - system_nio: https://dumps.tadiphone.dev/dumps/motorola/nio msi_prc-user-11-RRN31.Q3-1-11-1-919e2-release-keys

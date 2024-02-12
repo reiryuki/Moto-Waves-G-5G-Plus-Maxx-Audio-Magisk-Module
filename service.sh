@@ -9,8 +9,8 @@ set -x
 API=`getprop ro.build.version.sdk`
 
 # properties
-resetprop ro.audio.ignore_effects false
-resetprop vendor.audio.feature.maxx_audio.enable false
+resetprop -n ro.audio.ignore_effects false
+resetprop -n vendor.audio.feature.maxx_audio.enable false
 resetprop -p --delete persist.vendor.audio_fx.current
 resetprop -n persist.vendor.audio_fx.current waves
 resetprop -p --delete persist.vendor.audio_fx.waves.maxxsense
@@ -30,10 +30,8 @@ if [ "$API" -ge 24 ]; then
 else
   SERVER=mediaserver
 fi
-PID=`pidof $SERVER`
-if [ "$PID" ]; then
-  killall $SERVER android.hardware.audio@4.0-service-mediatek
-fi
+killall $SERVER\
+ android.hardware.audio@4.0-service-mediatek
 
 # wait
 sleep 20
@@ -82,7 +80,7 @@ if [ -d $AML ] && [ ! -f $AML/disable ]\
 fi
 
 # wait
-until [ "`getprop sys.boot_completed`" == "1" ]; do
+until [ "`getprop sys.boot_completed`" == 1 ]; do
   sleep 10
 done
 
@@ -95,8 +93,8 @@ if [ "$API" -ge 30 ]; then
   appops set $PKG AUTO_REVOKE_PERMISSIONS_IF_UNUSED ignore
 fi
 PKGOPS=`appops get $PKG`
-UID=`dumpsys package $PKG 2>/dev/null | grep -m 1 userId= | sed 's|    userId=||g'`
-if [ "$UID" -gt 9999 ]; then
+UID=`dumpsys package $PKG 2>/dev/null | grep -m 1 Id= | sed -e 's|    userId=||g' -e 's|    appId=||g'`
+if [ "$UID" ] && [ "$UID" -gt 9999 ]; then
   UIDOPS=`appops get --uid "$UID"`
 fi
 
@@ -106,15 +104,18 @@ if [ "$API" -ge 30 ]; then
   appops set $PKG AUTO_REVOKE_PERMISSIONS_IF_UNUSED ignore
 fi
 PKGOPS=`appops get $PKG`
-UID=`dumpsys package $PKG 2>/dev/null | grep -m 1 userId= | sed 's|    userId=||g'`
-if [ "$UID" -gt 9999 ]; then
+UID=`dumpsys package $PKG 2>/dev/null | grep -m 1 Id= | sed -e 's|    userId=||g' -e 's|    appId=||g'`
+if [ "$UID" ] && [ "$UID" -gt 9999 ]; then
   UIDOPS=`appops get --uid "$UID"`
 fi
+
+# audio flinger
+DMAF=`dumpsys media.audio_flinger`
 
 # function
 stop_log() {
 SIZE=`du $LOGFILE | sed "s|$LOGFILE||g"`
-if [ "$LOG" != stopped ] && [ "$SIZE" -gt 50 ]; then
+if [ "$LOG" != stopped ] && [ "$SIZE" -gt 75 ]; then
   exec 2>/dev/null
   set +x
   LOG=stopped

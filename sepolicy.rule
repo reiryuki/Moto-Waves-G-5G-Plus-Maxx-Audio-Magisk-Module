@@ -5,10 +5,10 @@ allow system_server system_file file write
 create { system_lib_file vendor_file vendor_configs_file same_process_hal_file }
 allow { system_file system_lib_file vendor_file vendor_configs_file same_process_hal_file } labeledfs filesystem associate
 allow init { system_file system_lib_file vendor_file vendor_configs_file } { dir file } relabelfrom
-allow init  same_process_hal_file file relabelfrom
+allow init same_process_hal_file file relabelfrom
 
 # dir
-allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } { mcd_data_file sysfs_msm_subsys } dir search
+allow { system_app priv_app platform_app untrusted_app_30 untrusted_app_29 untrusted_app_27 untrusted_app } { mcd_data_file sysfs_msm_subsys } dir search
 
 # additional
 allow { hal_audio_default mtk_hal_audio audioserver } system_suspend_hwservice hwservice_manager find
@@ -28,14 +28,16 @@ allow { hal_audio_default mtk_hal_audio audioserver } logd unix_stream_socket co
 allow { hal_audio_default mtk_hal_audio audioserver } { diag_device vendor_diag_device } chr_file { read write open ioctl getattr }
 allow { hal_audio_default mtk_hal_audio audioserver } device chr_file { read write }
 allow { hal_audio_default mtk_hal_audio audioserver } system_suspend binder call
-allow { hal_audio_default mtk_hal_audio audioserver } { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } fifo_file write
+allow { hal_audio_default mtk_hal_audio audioserver } { system_app priv_app platform_app untrusted_app_30 untrusted_app_29 untrusted_app_27 untrusted_app } fifo_file write
 allow hal_audio_default hal_audio_default capability2 block_suspend
 allow mtk_hal_audio mtk_hal_audio capability2 block_suspend
 allow audioserver audioserver capability2 block_suspend
 allow hal_audio_default hal_audio_default capability { sys_nice dac_override sys_admin dac_read_search }
 allow mtk_hal_audio mtk_hal_audio capability { sys_nice dac_override sys_admin dac_read_search }
 allow audioserver audioserver capability { sys_nice dac_override sys_admin dac_read_search }
-
+allow hal_audio_default hal_audio_default tcp_socket create
+allow mtk_hal_audio mtk_hal_audio tcp_socket create
+allow audioserver audioserver tcp_socket create
 
 
 
