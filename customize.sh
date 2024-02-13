@@ -89,7 +89,7 @@ else
     ui_print "- SDK $API"
   fi
   if [ "$API" -lt $NUM2 ]; then
-    ui_print "  Using legacy version"
+    ui_print "  Using legacy apps"
     cp -rf $MODPATH/system_10/* $MODPATH/system
   fi
 fi
