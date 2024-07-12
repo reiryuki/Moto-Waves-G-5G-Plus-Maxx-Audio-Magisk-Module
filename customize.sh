@@ -29,6 +29,13 @@ if [ "`grep_prop debug.log $OPTIONALS`" == 1 ]; then
   ui_print " "
 fi
 
+# recovery
+if [ "$BOOTMODE" != true ]; then
+  MODPATH_UPDATE=`echo $MODPATH | sed 's|modules/|modules_update/|g'`
+  rm -f $MODPATH/update
+  rm -rf $MODPATH_UPDATE
+fi
+
 # run
 . $MODPATH/function.sh
 
@@ -56,22 +63,12 @@ if [ "$ARCH" == arm64 ] || [ "$ARCH" == arm ]; then
     ARCH=arm
     IS64BIT=false
   fi
-  ui_print "- Architecture $ARCH"
+  ui_print "- $ARCH architecture"
   ui_print " "
 else
-  ui_print "! Unsupported architecture $ARCH."
+  ui_print "! Unsupported $ARCH architecture."
   ui_print "  This module is only for arm64 or arm architecture."
   abort
-fi
-
-# bit
-if [ "$IS64BIT" != true ]; then
-  rm -rf `find $MODPATH -type d -name *64*`
-fi
-
-# 32 bit
-if [ ! "$LIST32BIT" ]; then
-  abort "- This ROM doesn't support 32 bit library."
 fi
 
 # sdk
@@ -95,6 +92,31 @@ else
 fi
 ui_print " "
 
+# recovery
+mount_partitions_in_recovery
+
+# bit
+AUDIO64BIT=`grep linker64 /*/bin/hw/*hardware*audio*`
+if [ "$LIST32BIT" ]; then
+  if [ "$IS64BIT" == true ]; then
+#    ui_print "- 64 bit architecture"
+#    ui_print " "
+    ui_print "- 32 bit library support"
+    ui_print " "
+  else
+#    ui_print "- 32 bit architecture"
+    rm -rf `find $MODPATH -type d -name *64*`
+#    ui_print " "
+  fi
+  if [ "$AUDIO64BIT" ]; then
+    ui_print "! This module uses 32 bit audio service only"
+    ui_print "  But this ROM uses 64 bit audio service"
+    abort
+  fi
+else
+  abort "! This ROM doesn't support 32 bit library"
+fi
+
 # motocore
 if [ ! -d /data/adb/modules_update/MotoCore ]\
 && [ ! -d /data/adb/modules/MotoCore ]; then
@@ -106,9 +128,6 @@ else
   rm -f /data/adb/modules/MotoCore/remove
   rm -f /data/adb/modules/MotoCore/disable
 fi
-
-# recovery
-mount_partitions_in_recovery
 
 # magisk
 magisk_setup
@@ -233,22 +252,14 @@ ui_print "- Cleaning..."
 PKGS=`cat $MODPATH/package.txt`
 if [ "$BOOTMODE" == true ]; then
   for PKG in $PKGS; do
-    RES=`pm uninstall $PKG 2>/dev/null`
+    FILE=`find /data/app -name *$PKG*`
+    if [ "$FILE" ]; then
+      RES=`pm uninstall $PKG 2>/dev/null`
+    fi
   done
 fi
 remove_sepolicy_rule
 ui_print " "
-# power save
-FILE=$MODPATH/system/etc/sysconfig/*
-if [ "`grep_prop power.save $OPTIONALS`" == 1 ]; then
-  ui_print "- $MODNAME will not be allowed in power save."
-  ui_print "  It may save your battery but decreasing $MODNAME performance."
-  for PKG in $PKGS; do
-    sed -i "s|<allow-in-power-save package=\"$PKG\"/>||g" $FILE
-    sed -i "s|<allow-in-power-save package=\"$PKG\" />||g" $FILE
-  done
-  ui_print " "
-fi
 
 # function
 conflict() {
@@ -266,12 +277,12 @@ for NAME in $NAMES; do
     sh $FILE
     rm -f $FILE
   fi
-  rm -rf /metadata/magisk/$NAME
-  rm -rf /mnt/vendor/persist/magisk/$NAME
-  rm -rf /persist/magisk/$NAME
-  rm -rf /data/unencrypted/magisk/$NAME
-  rm -rf /cache/magisk/$NAME
-  rm -rf /cust/magisk/$NAME
+  rm -rf /metadata/magisk/$NAME\
+   /mnt/vendor/persist/magisk/$NAME\
+   /persist/magisk/$NAME\
+   /data/unencrypted/magisk/$NAME\
+   /cache/magisk/$NAME\
+   /cust/magisk/$NAME
 done
 }
 
@@ -538,7 +549,7 @@ fi
 # raw
 FILE=$MODPATH/.aml.sh
 if [ "`grep_prop disable.raw $OPTIONALS`" == 0 ]; then
-  ui_print "- Not disables Ultra Low Latency playback (RAW)"
+  ui_print "- Does not disable Ultra Low Latency playback (RAW)"
   ui_print " "
 else
   sed -i 's|#u||g' $FILE

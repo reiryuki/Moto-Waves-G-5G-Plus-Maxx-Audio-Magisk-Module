@@ -2,9 +2,9 @@
 
 # destination
 [ ! "$libdir" ] && libdir=/vendor
-MODAEC=`find $MODPATH -type f -name *audio*effects*.conf`
-MODAEX=`find $MODPATH -type f -name *audio*effects*.xml`
-MODAP=`find $MODPATH -type f -name *policy*.conf -o -name *policy*.xml`
+MODAECS=`find $MODPATH -type f -name *audio*effects*.conf`
+MODAEXS=`find $MODPATH -type f -name *audio*effects*.xml`
+MODAPS=`find $MODPATH -type f -name *policy*.conf -o -name *policy*.xml`
 
 # function
 archdir() {
@@ -67,7 +67,7 @@ RMVS="ring_helper alarm_helper music_helper voice_helper
       dlb_system_listener dlb_notification_listener"
 
 # setup audio effects conf
-if [ "$MODAEC" ]; then
+for MODAEC in $MODAECS; do
   for RMV in $RMVS; do
     sed -i "/^        $RMV {/ {;N s/        $RMV {\n        }//}" $MODAEC
     sed -i "s|$RMV { }||g" $MODAEC
@@ -155,10 +155,10 @@ output_session_processing {\
       sed -i "/^output_session_processing {/a\    music {\n    }" $MODAEC
     fi
   fi
-fi
+done
 
 # setup audio effects xml
-if [ "$MODAEX" ]; then
+for MODAEX in $MODAEXS; do
   for RMV in $RMVS; do
     sed -i "s|<apply effect=\"$RMV\"/>||g" $MODAEX
     sed -i "s|<apply effect=\"$RMV\" />||g" $MODAEX
@@ -228,7 +228,8 @@ if [ "$MODAEX" ]; then
     fi
     if ! grep -q '<stream type="notification">' $MODAEX\
     || grep -q '<!-- YunMang.Xiao@PSW.MM.Dolby' $MODAEX\
-    || grep -q '<!-- WuHao@MULTIMEDIA.AUDIOSERVER.EFFECT' $MODAEX; then
+    || grep -q '<!-- WuHao@MULTIMEDIA.AUDIOSERVER.EFFECT' $MODAEX\
+    || grep -q '<!-- heaton.zhong' $MODAEX; then
       sed -i "/<postprocess>/a\        <stream type=\"notification\">\n        <\/stream>" $MODAEX
     fi
     if ! grep -q '<stream type="voice_call">' $MODAEX; then
@@ -239,21 +240,24 @@ if [ "$MODAEX" ]; then
     fi
     if ! grep -q '<stream type="alarm">' $MODAEX\
     || grep -q '<!-- YunMang.Xiao@PSW.MM.Dolby' $MODAEX\
-    || grep -q '<!-- WuHao@MULTIMEDIA.AUDIOSERVER.EFFECT' $MODAEX; then
+    || grep -q '<!-- WuHao@MULTIMEDIA.AUDIOSERVER.EFFECT' $MODAEX\
+    || grep -q '<!-- heaton.zhong' $MODAEX; then
       sed -i "/<postprocess>/a\        <stream type=\"alarm\">\n        <\/stream>" $MODAEX
     fi
     if ! grep -q '<stream type="ring">' $MODAEX\
     || grep -q '<!-- YunMang.Xiao@PSW.MM.Dolby' $MODAEX\
-    || grep -q '<!-- WuHao@MULTIMEDIA.AUDIOSERVER.EFFECT' $MODAEX; then
+    || grep -q '<!-- WuHao@MULTIMEDIA.AUDIOSERVER.EFFECT' $MODAEX\
+    || grep -q '<!-- heaton.zhong' $MODAEX; then
       sed -i "/<postprocess>/a\        <stream type=\"ring\">\n        <\/stream>" $MODAEX
     fi
     if ! grep -q '<stream type="music">' $MODAEX\
     || grep -q '<!-- YunMang.Xiao@PSW.MM.Dolby' $MODAEX\
-    || grep -q '<!-- WuHao@MULTIMEDIA.AUDIOSERVER.EFFECT' $MODAEX; then
+    || grep -q '<!-- WuHao@MULTIMEDIA.AUDIOSERVER.EFFECT' $MODAEX\
+    || grep -q '<!-- heaton.zhong' $MODAEX; then
       sed -i "/<postprocess>/a\        <stream type=\"music\">\n        <\/stream>" $MODAEX
     fi
   fi
-fi
+done
 
 # patch audio effects
 LIB=libmaxxeffect-cembedded.so
@@ -263,7 +267,7 @@ UUID=ae12da60-99ac-11df-b456-0002a5d5c51b
 RMVS="$LIB $LIBNAME $NAME $UUID"
 archdir
 if [ "$ARCHDIR" ]; then
-  if [ "$MODAEC" ]; then
+  for MODAEC in $MODAECS; do
     remove_conf
     sed -i "/^libraries {/a\  $LIBNAME {\n    path \\$libdir\\$ARCHDIR\/soundfx\/$LIB\n  }" $MODAEC
     sed -i "/^effects {/a\  $NAME {\n    library $LIBNAME\n    uuid $UUID\n  }" $MODAEC
@@ -282,8 +286,8 @@ if [ "$ARCHDIR" ]; then
 #c    sed -i "/^    call_assistant {/a\        $NAME {\n        }" $MODAEC
 #p    sed -i "/^    patch {/a\        $NAME {\n        }" $MODAEC
 #g    sed -i "/^    rerouting {/a\        $NAME {\n        }" $MODAEC
-  fi
-  if [ "$MODAEX" ]; then
+  done
+  for MODAEX in $MODAEXS; do
     remove_xml
     sed -i "/<libraries>/a\        <library name=\"$LIBNAME\" path=\"$LIB\"\/>" $MODAEX
     sed -i "/<effects>/a\        <effect name=\"$NAME\" library=\"$LIBNAME\" uuid=\"$UUID\"\/>" $MODAEX
@@ -302,14 +306,14 @@ if [ "$ARCHDIR" ]; then
 #c    sed -i "/<stream type=\"call_assistant\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 #p    sed -i "/<stream type=\"patch\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
 #g    sed -i "/<stream type=\"rerouting\">/a\            <apply effect=\"$NAME\"\/>" $MODAEX
-  fi
+  done
 fi
 
 # patch audio policy
-#uif [ "$MODAP" ]; then
+#ufor MODAP in $MODAPS; do
 #u  sed -i 's|RAW|NONE|g' $MODAP
 #u  sed -i 's|,raw||g' $MODAP
-#ufi
+#udone
 
 
 
