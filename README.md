@@ -21,9 +21,9 @@
 - https://reiryuki.blogspot.com/2020/09/motorola-waves-maxx-audio-fx-magisk.html?m=1
 
 ## Requirements
-- ARM or ARM64 architecture
+- armeabi-v7a or arm64-v8a architecture
 - 32 bit audio service (this also can be found in 64 bit ROM with 32 bit support, not only 32 bit ROM)
-- Android 8 until 11 initial builds only (Android 11 newer builds probably not supported)
+- Android 8 (SDK 26) until 11 (SDK 30) initial builds only (Android 11 newer builds probably not supported)
 - Magisk or KernelSU installed
 - Moto Core Magisk Module installed https://github.com/reiryuki/Moto-Core-Magisk-Module except you are in Motorola ROM
 
@@ -45,11 +45,9 @@
 - Stream: https://t.me/androidryukimodsdiscussions/26764
 
 ## Support & Bug Report
+- @HuskyDG
 - https://t.me/androidryukimodsdiscussions/2618
 - If you don't do above, issues will be closed immediately
-
-## Tested on
-- Android 10 CrDroid ROM
 
 ## Credits and Contributors
 - https://t.me/viperatmos
@@ -57,6 +55,6 @@
 - You can contribute ideas about this Magisk Module here: https://t.me/androidappsportdevelopment
 
 ## Sponsors
-- https://t.me/androidryukimodsdiscussions/2619
+- https://t.me/ryukinotes/25
 
 
