@@ -4,13 +4,79 @@ ui_print " "
 # var
 UID=`id -u`
 [ ! "$UID" ] && UID=0
+FIRARCH=`grep_get_prop ro.bionic.arch`
+SECARCH=`grep_get_prop ro.bionic.2nd_arch`
 ABILIST=`grep_get_prop ro.product.cpu.abilist`
 if [ ! "$ABILIST" ]; then
   ABILIST=`grep_get_prop ro.system.product.cpu.abilist`
 fi
+if [ "$FIRARCH" == arm64 ]\
+&& ! echo "$ABILIST" | grep -q arm64-v8a; then
+  if [ "$ABILIST" ]; then
+    ABILIST="$ABILIST,arm64-v8a"
+  else
+    ABILIST=arm64-v8a
+  fi
+fi
+if [ "$FIRARCH" == x64 ]\
+&& ! echo "$ABILIST" | grep -q x86_64; then
+  if [ "$ABILIST" ]; then
+    ABILIST="$ABILIST,x86_64"
+  else
+    ABILIST=x86_64
+  fi
+fi
+if [ "$SECARCH" == arm ]\
+&& ! echo "$ABILIST" | grep -q armeabi; then
+  if [ "$ABILIST" ]; then
+    ABILIST="$ABILIST,armeabi"
+  else
+    ABILIST=armeabi
+  fi
+fi
+if [ "$SECARCH" == arm ]\
+&& ! echo "$ABILIST" | grep -q armeabi-v7a; then
+  if [ "$ABILIST" ]; then
+    ABILIST="$ABILIST,armeabi-v7a"
+  else
+    ABILIST=armeabi-v7a
+  fi
+fi
+if [ "$SECARCH" == x86 ]\
+&& ! echo "$ABILIST" | grep -q x86; then
+  if [ "$ABILIST" ]; then
+    ABILIST="$ABILIST,x86"
+  else
+    ABILIST=x86
+  fi
+fi
 ABILIST32=`grep_get_prop ro.product.cpu.abilist32`
 if [ ! "$ABILIST32" ]; then
   ABILIST32=`grep_get_prop ro.system.product.cpu.abilist32`
+fi
+if [ "$SECARCH" == arm ]\
+&& ! echo "$ABILIST32" | grep -q armeabi; then
+  if [ "$ABILIST32" ]; then
+    ABILIST32="$ABILIST32,armeabi"
+  else
+    ABILIST32=armeabi
+  fi
+fi
+if [ "$SECARCH" == arm ]\
+&& ! echo "$ABILIST32" | grep -q armeabi-v7a; then
+  if [ "$ABILIST32" ]; then
+    ABILIST32="$ABILIST32,armeabi-v7a"
+  else
+    ABILIST32=armeabi-v7a
+  fi
+fi
+if [ "$SECARCH" == x86 ]\
+&& ! echo "$ABILIST32" | grep -q x86; then
+  if [ "$ABILIST32" ]; then
+    ABILIST32="$ABILIST32,x86"
+  else
+    ABILIST32=x86
+  fi
 fi
 if [ ! "$ABILIST32" ]; then
   [ -f /system/lib/libandroid.so ] && ABILIST32=true
@@ -64,54 +130,6 @@ else
 fi
 ui_print " "
 
-# 32 bit
-if [ "`grep_prop waves.32bit $OPTIONALS`" == 1 ]; then
-  ABI=armeabi-v7a
-  ARCH=arm
-  IS64BIT=false
-fi
-
-# architecture
-if [ "$ABILIST" ]; then
-  ui_print "- $ABILIST architecture"
-  ui_print " "
-fi
-NAME=arm64-v8a
-NAME2=armeabi-v7a
-if ! echo "$ABILIST" | grep -Eq "$NAME|$NAME2"; then
-  if [ "$BOOTMODE" == true ]; then
-    ui_print "! This ROM doesn't support $NAME"
-    ui_print "  nor $NAME2 architecture"
-  else
-    ui_print "! This Recovery doesn't support $NAME"
-    ui_print "  nor $NAME2 architecture"
-    ui_print "  Try to install via Magisk app instead"
-  fi
-  abort
-fi
-if ! echo "$ABILIST" | grep -q $NAME; then
-  rm -rf `find $MODPATH -type d -name *64*`
-  if [ "$BOOTMODE" != true ]; then
-    ui_print "! This Recovery doesn't support $NAME architecture"
-    ui_print "  Try to install via Magisk app instead"
-    ui_print " "
-  fi
-fi
-if ! echo "$ABILIST" | grep -q $NAME2; then
-  if [ "$BOOTMODE" == true ]; then
-    abort "! This ROM doesn't support $NAME2 architecture"
-  else
-    ui_print "! This Recovery doesn't support $NAME2 architecture"
-    ui_print "  Try to install via Magisk app instead"
-    abort
-  fi
-fi
-if ! file /*/bin/hw/*hardware*audio* | grep -q 32-bit; then
-  ui_print "! This module uses 32 bit audio service only"
-  ui_print "  But this ROM uses 64 bit audio service"
-  abort
-fi
-
 # sdk
 NUM=26
 NUM2=30
@@ -135,6 +153,44 @@ ui_print " "
 
 # recovery
 mount_partitions_in_recovery
+
+# 32 bit
+if [ "`grep_prop waves.32bit $OPTIONALS`" == 1 ]; then
+  ABI=armeabi-v7a
+  ARCH=arm
+  IS64BIT=false
+  ABILIST=`echo "$ABILIST" | sed 's|arm64-v8a||g'`
+fi
+
+# architecture
+if [ "$ABILIST" ]; then
+  ui_print "- $ABILIST architecture"
+  ui_print " "
+fi
+NAME=arm64-v8a
+NAME2=armeabi-v7a
+if ! echo "$ABILIST" | grep -q $NAME; then
+  rm -rf `find $MODPATH/system -type d -name *64*`
+  if [ "$BOOTMODE" != true ]; then
+    ui_print "! This Recovery doesn't support $NAME architecture"
+    ui_print "  Try to install via Magisk app instead"
+    ui_print " "
+  fi
+fi
+if ! echo "$ABILIST" | grep -q $NAME2; then
+  if [ "$BOOTMODE" == true ]; then
+    abort "! This ROM doesn't support $NAME2 architecture"
+  else
+    ui_print "! This Recovery doesn't support $NAME2 architecture"
+    ui_print "  Try to install via Magisk app instead"
+    abort
+  fi
+fi
+if ! file /*/bin/hw/*hardware*audio* | grep -q 32-bit; then
+  ui_print "! This module uses 32 bit audio service only"
+  ui_print "  But this ROM uses 64 bit audio service"
+  abort
+fi
 
 # motocore
 if [ ! -d /data/adb/modules/MotoCore ]; then
@@ -192,12 +248,11 @@ extract_lib() {
 for APP in $APPS; do
   FILE=`find $MODPATH/system -type f -name $APP.apk`
   if [ -f `dirname $FILE`/extract ]; then
-    rm -f `dirname $FILE`/extract
     ui_print "- Extracting..."
-    DIR=`dirname $FILE`/lib/"$ARCH"
+    DIR=`dirname $FILE`/lib/"$ARCHLIB"
     mkdir -p $DIR
     rm -rf $TMPDIR/*
-    DES=lib/"$ABI"/*
+    DES=lib/"$ABILIB"/*
     unzip -d $TMPDIR -o $FILE $DES
     cp -f $TMPDIR/$DES $DIR
     ui_print " "
@@ -206,21 +261,29 @@ done
 }
 
 # extract
-APPS=MotoWaves
-if [ "$IS64BIT" == true ]; then
-  ABI=arm64-v8a
-  ARCH=arm64
+APPS="`ls $MODPATH/system/priv-app`
+      `ls $MODPATH/system/app`"
+ARCHLIB=arm64
+ABILIB=arm64-v8a
+extract_lib
+ARCHLIB=arm
+if echo "$ABILIST" | grep -q armeabi-v7a; then
+  ABILIB=armeabi-v7a
+  extract_lib
+elif echo "$ABILIST" | grep -q armeabi; then
+  ABILIB=armeabi
+  extract_lib
 else
-  ABI=armeabi-v7a
-  ARCH=arm
+  ABILIB=armeabi-v7a
+  extract_lib
 fi
+ARCHLIB=x64
+ABILIB=x86_64
 extract_lib
-
-# extract
-APPS=WavesService
-ABI=armeabi-v7a
-ARCH=arm
+ARCHLIB=x86
+ABILIB=x86
 extract_lib
+rm -f `find $MODPATH/system -type f -name extract`
 
 # function
 check_function() {
@@ -512,14 +575,11 @@ if echo "$PROP" | grep -q c; then
   sed -i 's|#c||g' $FILE
   ui_print " "
 fi
-if echo "$PROP" | grep -q p; then
-  ui_print "- Activating patch stream..."
+if [ "`grep_prop waves.game $OPTIONALS`" != 0 ]; then
   sed -i 's|#p||g' $FILE
-  ui_print " "
-fi
-if echo "$PROP" | grep -q g; then
-  ui_print "- Activating rerouting stream..."
   sed -i 's|#g||g' $FILE
+else
+  ui_print "- Does not use Moto Waves Game patch & rerouting stream"
   ui_print " "
 fi
 
