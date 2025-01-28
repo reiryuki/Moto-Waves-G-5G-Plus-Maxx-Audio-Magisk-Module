@@ -48,11 +48,11 @@
 - Global: https://t.me/ryukinotes/34
 
 ## Support & Bug Report
-- @HuskyDG
 - https://t.me/ryukinotes/54
 - If you don't do above, issues will be closed immediately
 
 ## Credits and Contributors
+- @HuskyDG
 - https://t.me/viperatmos
 - https://t.me/androidryukimodsdiscussions
 - You can contribute ideas about this Magisk Module here: https://t.me/androidappsportdevelopment
