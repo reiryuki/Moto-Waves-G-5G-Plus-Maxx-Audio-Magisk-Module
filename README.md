@@ -28,6 +28,7 @@
 - Moto Core Magisk Module installed https://github.com/reiryuki/Moto-Core-Magisk-Module except you are in Motorola ROM
 
 ## Installation Guide & Download Link
+- Remove any other else Moto Waves MAGISK MODULE with different name and reboot first (No need to remove if it's the same name)
 - Install Moto Core Magisk Module first: https://github.com/reiryuki/Moto-Core-Magisk-Module except you are in Motorola ROM
 - Install this module https://www.pling.com/p/1531761/ via Magisk app or KernelSU app or Recovery if Magisk installed
 - Install AML Magisk Module https://t.me/ryukinotes/34 only if using any other else audio mod module
