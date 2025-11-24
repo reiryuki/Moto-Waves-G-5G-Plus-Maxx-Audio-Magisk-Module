@@ -443,6 +443,15 @@ elif [ "`grep_prop permissive.mode $OPTIONALS`" == 2 ]; then
   ui_print " "
 fi
 
+# public
+FILE=$MODPATH/post-fs-data.sh
+if [ "`grep_prop public.libraries $OPTIONALS`" != 0 ]; then
+  sed -i 's|#p||g' $FILE
+else
+  ui_print "- Does not patch public.libraries.txt"
+  ui_print " "
+fi
+
 # function
 hide_oat() {
 for APP in $APPS; do
@@ -578,28 +587,6 @@ if [ "`grep_prop waves.game $OPTIONALS`" != 0 ]; then
 else
   ui_print "- Does not use Moto Waves Game patch & rerouting stream"
   ui_print " "
-fi
-
-# check
-NAME=libadspd.so
-APP=MotoWaves
-if [ "$IS64BIT" == true ]; then
-  DIR=`find $MODPATH/system -type d -name $APP`/lib/arm64
-  if [ -f $SYSTEM/lib64/$NAME ]; then
-    rm -f $DIR/$NAME
-  elif [ -f $VENDOR/lib64/$NAME ]; then
-    cp -f $VENDOR/lib64/$NAME $DIR
-  elif [ -f $ODM/lib64/$NAME ]; then
-    cp -f $ODM/lib64/$NAME $DIR
-  fi
-fi
-DIR=`find $MODPATH/system -type d -name $APP`/lib/arm
-if [ -f $SYSTEM/lib/$NAME ]; then
-  rm -f $DIR/$NAME
-elif [ -f $VENDOR/lib/$NAME ]; then
-  cp -f $VENDOR/lib/$NAME $DIR
-elif [ -f $ODM/lib/$NAME ]; then
-  cp -f $ODM/lib/$NAME $DIR
 fi
 
 # function

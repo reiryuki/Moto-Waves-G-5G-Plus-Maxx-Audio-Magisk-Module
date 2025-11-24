@@ -13,6 +13,7 @@ allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untru
 # file
 allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } vendor_displayfeature_prop file map
 allow { system_app priv_app platform_app untrusted_app_29 untrusted_app_27 untrusted_app } { migt_file sysfs_migt mcd_data_file } file read
+allow crash_dump vendor_overlay_file file { read open getattr map }
 
 # additional
 allow { hal_audio_default mtk_hal_audio audioserver } { system_suspend_hwservice default_android_hwservice } hwservice_manager find
