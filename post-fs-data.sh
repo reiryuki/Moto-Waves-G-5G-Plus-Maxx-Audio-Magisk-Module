@@ -152,28 +152,7 @@ else
 fi
 
 # function
-patch_public_libraries() {
-for NAME in $NAMES; do
-  for FILE in $FILES; do
-    if ! grep $NAME $FILE; then
-      if echo "$ABILIST" | grep arm64-v8a\
-      && ! echo "$ABILIST" | grep armeabi-v7a; then
-        echo "$NAME 64" >> $FILE
-      else
-        echo $NAME >> $FILE
-      fi
-    fi
-  done
-done
-if [ ! "$DUPS" ]; then
-  for FILE in $FILES; do
-    chmod 0644 $FILE
-  done
-fi
-}
-
-# check & patch
-NAMES=libadspd.so
+check_library() {
 for NAME in $NAMES; do
   FILES=`find $MODPATH/system -type f -path "*/lib/arm64/$NAME*"`
   if [ -f /system/lib64/$NAME ]\
@@ -200,6 +179,30 @@ for NAME in $NAMES; do
     done
   fi
 done
+}
+patch_public_libraries() {
+for NAME in $NAMES; do
+  for FILE in $FILES; do
+    if ! grep $NAME $FILE; then
+      if echo "$ABILIST" | grep arm64-v8a\
+      && ! echo "$ABILIST" | grep armeabi-v7a; then
+        echo "$NAME 64" >> $FILE
+      else
+        echo $NAME >> $FILE
+      fi
+    fi
+  done
+done
+if [ ! "$DUPS" ]; then
+  for FILE in $FILES; do
+    chmod 0644 $FILE
+  done
+fi
+}
+
+# check & patch
+NAMES=libadspd.so
+#pcheck_library
 MODID=`basename "$MODPATH"`
 VETC=/vendor/etc
 if [ -L $MODPATH/system/vendor ]\
@@ -228,20 +231,36 @@ for NAME in $NAMES; do
   if [ -L $MODPATH/system/vendor ]\
   && [ -d $MODPATH/vendor ]; then
     rm -f $MODPATH/vendor/lib*/$NAME
-    if ! ls -Z /vendor/lib64/$NAME | grep $CON; then
+    if [ -f /vendor/lib64/$NAME ]\
+    && ! ls -Z /vendor/lib64/$NAME | grep $CON; then
       cp -af /vendor/lib64/$NAME $MODPATH/vendor/lib64
+    elif [ -f /odm/lib64/$NAME ]\
+    && ! ls -Z /odm/lib64/$NAME | grep $CON; then
+      cp -af /odm/lib64/$NAME $MODPATH/vendor/lib64
     fi
-    if ! ls -Z /vendor/lib/$NAME | grep $CON; then
+    if [ -f /vendor/lib/$NAME ]\
+    && ! ls -Z /vendor/lib/$NAME | grep $CON; then
       cp -af /vendor/lib/$NAME $MODPATH/vendor/lib
+    elif [ -f /odm/lib/$NAME ]\
+    && ! ls -Z /odm/lib/$NAME | grep $CON; then
+      cp -af /odm/lib/$NAME $MODPATH/vendor/lib
     fi
     chcon $CON $MODPATH/vendor/lib*/$NAME
   else
     rm -f $MODPATH/system/vendor/lib*/$NAME
-    if ! ls -Z /vendor/lib64/$NAME | grep $CON; then
+    if [ -f /vendor/lib64/$NAME ]\
+    && ! ls -Z /vendor/lib64/$NAME | grep $CON; then
       cp -af /vendor/lib64/$NAME $MODPATH/system/vendor/lib64
+    elif [ -f /odm/lib64/$NAME ]\
+    && ! ls -Z /odm/lib64/$NAME | grep $CON; then
+      cp -af /odm/lib64/$NAME $MODPATH/system/vendor/lib64
     fi
-    if ! ls -Z /vendor/lib/$NAME | grep $CON; then
+    if [ -f /vendor/lib/$NAME ]\
+    && ! ls -Z /vendor/lib/$NAME | grep $CON; then
       cp -af /vendor/lib/$NAME $MODPATH/system/vendor/lib
+    elif [ -f /odm/lib/$NAME ]\
+    && ! ls -Z /odm/lib/$NAME | grep $CON; then
+      cp -af /odm/lib/$NAME $MODPATH/system/vendor/lib
     fi
     chcon $CON $MODPATH/system/vendor/lib*/$NAME
   fi
