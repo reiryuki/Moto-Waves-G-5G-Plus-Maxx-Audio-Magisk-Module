@@ -53,6 +53,10 @@ if [ "$SECARCH" == x86 ]\
     ABILIST=x86
   fi
 fi
+if [ ! -d $MODPATH/vendor ]\
+|| [ -L $MODPATH/vendor ]; then
+  MODSYSTEM=/system
+fi
 
 # function
 permissive() {
@@ -130,26 +134,14 @@ for DIR in $DIRS; do
 done
 chcon -R u:object_r:system_lib_file:s0 $MODPATH/system/lib*
 chcon -R u:object_r:vendor_configs_file:s0 $MODPATH/system/odm/etc
-if [ -L $MODPATH/system/vendor ]\
-&& [ -d $MODPATH/vendor ]; then
-  FILES=`find $MODPATH/vendor/lib* -type f`
-  for FILE in $FILES; do
-    chmod 0644 $FILE
-    chown 0.0 $FILE
-  done
-  chcon -R u:object_r:vendor_file:s0 $MODPATH/vendor
-  chcon -R u:object_r:vendor_configs_file:s0 $MODPATH/vendor/etc
-  chcon -R u:object_r:vendor_configs_file:s0 $MODPATH/vendor/odm/etc
-else
-  FILES=`find $MODPATH/system/vendor/lib* -type f`
-  for FILE in $FILES; do
-    chmod 0644 $FILE
-    chown 0.0 $FILE
-  done
-  chcon -R u:object_r:vendor_file:s0 $MODPATH/system/vendor
-  chcon -R u:object_r:vendor_configs_file:s0 $MODPATH/system/vendor/etc
-  chcon -R u:object_r:vendor_configs_file:s0 $MODPATH/system/vendor/odm/etc
-fi
+FILES=`find $MODPATH$MODSYSTEM/vendor/lib* -type f`
+for FILE in $FILES; do
+  chmod 0644 $FILE
+  chown 0.0 $FILE
+done
+chcon -R u:object_r:vendor_file:s0 $MODPATH$MODSYSTEM/vendor
+chcon -R u:object_r:vendor_configs_file:s0 $MODPATH$MODSYSTEM/vendor/etc
+chcon -R u:object_r:vendor_configs_file:s0 $MODPATH$MODSYSTEM/vendor/odm/etc
 
 # function
 check_library() {
@@ -205,20 +197,10 @@ NAMES=libadspd.so
 #pcheck_library
 MODID=`basename "$MODPATH"`
 VETC=/vendor/etc
-if [ -L $MODPATH/system/vendor ]\
-&& [ -d $MODPATH/vendor ]; then
-  MODVETC=$MODPATH$VETC
-else
-  MODVETC=$MODPATH/system$VETC
-fi
+MODVETC=$MODPATH$MODSYSTEM$VETC
 DES=public.libraries.txt
 rm -f `find $MODPATH -type f -name $DES`
-if [ -L $MODPATH/system/vendor ]\
-&& [ -d $MODPATH/vendor ]; then
-  DUPS=`find /data/adb/modules/*$VETC ! -path "*/$MODID/*" -maxdepth 1 -type f -name $DES`
-else
-  DUPS=`find /data/adb/modules/*/system$VETC ! -path "*/$MODID/*" -maxdepth 1 -type f -name $DES`
-fi
+DUPS=`find /data/adb/modules/*$MODSYSTEM$VETC ! -path "*/$MODID/*" -maxdepth 1 -type f -name $DES`
 if [ "$DUPS" ]; then
   FILES=$DUPS
 else
@@ -227,43 +209,23 @@ else
 fi
 #ppatch_public_libraries
 for NAME in $NAMES; do
+  rm -f $MODPATH$MODSYSTEM/vendor/lib*/$NAME
   CON=u:object_r:same_process_hal_file:s0
-  if [ -L $MODPATH/system/vendor ]\
-  && [ -d $MODPATH/vendor ]; then
-    rm -f $MODPATH/vendor/lib*/$NAME
-    if [ -f /vendor/lib64/$NAME ]\
-    && ! ls -Z /vendor/lib64/$NAME | grep $CON; then
-      cp -af /vendor/lib64/$NAME $MODPATH/vendor/lib64
-    elif [ -f /odm/lib64/$NAME ]\
-    && ! ls -Z /odm/lib64/$NAME | grep $CON; then
-      cp -af /odm/lib64/$NAME $MODPATH/vendor/lib64
-    fi
-    if [ -f /vendor/lib/$NAME ]\
-    && ! ls -Z /vendor/lib/$NAME | grep $CON; then
-      cp -af /vendor/lib/$NAME $MODPATH/vendor/lib
-    elif [ -f /odm/lib/$NAME ]\
-    && ! ls -Z /odm/lib/$NAME | grep $CON; then
-      cp -af /odm/lib/$NAME $MODPATH/vendor/lib
-    fi
-    chcon $CON $MODPATH/vendor/lib*/$NAME
-  else
-    rm -f $MODPATH/system/vendor/lib*/$NAME
-    if [ -f /vendor/lib64/$NAME ]\
-    && ! ls -Z /vendor/lib64/$NAME | grep $CON; then
-      cp -af /vendor/lib64/$NAME $MODPATH/system/vendor/lib64
-    elif [ -f /odm/lib64/$NAME ]\
-    && ! ls -Z /odm/lib64/$NAME | grep $CON; then
-      cp -af /odm/lib64/$NAME $MODPATH/system/vendor/lib64
-    fi
-    if [ -f /vendor/lib/$NAME ]\
-    && ! ls -Z /vendor/lib/$NAME | grep $CON; then
-      cp -af /vendor/lib/$NAME $MODPATH/system/vendor/lib
-    elif [ -f /odm/lib/$NAME ]\
-    && ! ls -Z /odm/lib/$NAME | grep $CON; then
-      cp -af /odm/lib/$NAME $MODPATH/system/vendor/lib
-    fi
-    chcon $CON $MODPATH/system/vendor/lib*/$NAME
+  if [ -f /vendor/lib64/$NAME ]\
+  && ! ls -Z /vendor/lib64/$NAME | grep $CON; then
+    cp -af /vendor/lib64/$NAME $MODPATH$MODSYSTEM/vendor/lib64
+  elif [ -f /odm/lib64/$NAME ]\
+  && ! ls -Z /odm/lib64/$NAME | grep $CON; then
+    cp -af /odm/lib64/$NAME $MODPATH$MODSYSTEM/vendor/lib64
   fi
+  if [ -f /vendor/lib/$NAME ]\
+  && ! ls -Z /vendor/lib/$NAME | grep $CON; then
+    cp -af /vendor/lib/$NAME $MODPATH$MODSYSTEM/vendor/lib
+  elif [ -f /odm/lib/$NAME ]\
+  && ! ls -Z /odm/lib/$NAME | grep $CON; then
+    cp -af /odm/lib/$NAME $MODPATH$MODSYSTEM/vendor/lib
+  fi
+  chcon $CON $MODPATH$MODSYSTEM/vendor/lib*/$NAME
 done
 if [ ! "$DUPS" ]; then
   for FILE in $FILES; do

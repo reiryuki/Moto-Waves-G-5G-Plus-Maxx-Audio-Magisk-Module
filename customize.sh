@@ -155,9 +155,10 @@ ui_print " "
 mount_partitions_in_recovery
 
 # 32 bit
-if [ "`grep_prop waves.32bit $OPTIONALS`" == 1 ]; then
-  ABI=armeabi-v7a
+if [ "`grep_prop waves.32bit $OPTIONALS`" == 1 ]\
+&& echo "$ABILIST" | grep -q armeabi-v7a; then
   ARCH=arm
+  ABI=armeabi-v7a
   IS64BIT=false
   ABILIST=`echo "$ABILIST" | sed 's|arm64-v8a||g'`
 fi
@@ -186,7 +187,7 @@ if ! echo "$ABILIST" | grep -q $NAME2; then
     abort
   fi
 fi
-if ! file /*/bin/hw/*hardware*audio* | grep -q 32-bit; then
+if ! file /*/bin/hw/*audio* | grep -q 32-bit; then
   ui_print "! This module uses 32 bit audio service only"
   ui_print "  But this ROM uses 64 bit audio service"
   abort
@@ -628,6 +629,7 @@ else
 fi
 
 # run
+MODSYSTEM=/system
 . $MODPATH/copy.sh
 . $MODPATH/.aml.sh
 
