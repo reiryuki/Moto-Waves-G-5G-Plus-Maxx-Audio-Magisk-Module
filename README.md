@@ -25,6 +25,7 @@ v6.19
 - Resets module folders/files permissions at post-fs-data
 - Move _uninstall.log to /data/adb/logs/
 - Removes conflicted weird modules
+- Does not disable raw playback (You can use Audio Compatibility Patch Reborn Magisk Module instead)
 
 v6.18
 - Fix wrong target in latest KernelSU
