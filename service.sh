@@ -11,6 +11,27 @@ if [ ! -d $MODPATH/vendor ]\
 || [ -L $MODPATH/vendor ]; then
   MODSYSTEM=/system
 fi
+MOD=/data/adb/modules/nomount
+NM=$MOD/bin/nm
+NOMOUNT=false
+[ ! -f $MOD/disable ] && [ -x $NM ] && $NM v >/dev/null 2>&1 && NOMOUNT=true
+AML=/data/adb/modules/aml
+AUD=`cat $MODPATH/audio.txt`
+
+# NoMount
+if $NOMOUNT; then
+  if [ ! -d $AML ] || [ -f $AML/disable ]; then
+    FILES=`find $MODPATH/system $MODPATH/vendor -type f -name $AUD -o -name public.libraries.txt`
+    for FILE in $FILES; do
+      DES=`echo $FILE | sed -e "s|$MODPATH||g" -e 's|/system/odm|/odm|g' -e 's|/system/my_product|/my_product|g'`
+      RDES=`realpath $DES`
+      if [ -f $RDES ]; then
+        $NM del $RDES 2>/dev/null || true
+        $NM add $RDES $FILE
+      fi
+    done
+  fi
+fi
 
 # properties
 resetprop -n ro.audio.ignore_effects false
@@ -39,42 +60,6 @@ killall $SERVER\
  android.hardware.audio.service
 
 # wait
-sleep 20
-
-# aml fix
-AML=/data/adb/modules/aml
-DIR=$AML$MODSYSTEM/vendor/odm/etc
-if [ -d $DIR ] && [ ! -f $AML/disable ]; then
-  chcon -R u:object_r:vendor_configs_file:s0 $DIR
-fi
-AUD=`grep AUD= $MODPATH/copy.sh | sed -e 's|AUD=||g' -e 's|"||g'`
-DIR=$AML$MODSYSTEM/vendor
-FILES=`find $DIR -type f -name $AUD`
-if [ -d $AML ] && [ ! -f $AML/disable ]\
-&& find $DIR -type f -name $AUD; then
-  if ! grep '/odm' $AML/post-fs-data.sh && [ -d /odm ]\
-  && [ "`realpath /odm/etc`" == /odm/etc ]; then
-    for FILE in $FILES; do
-      DES=/odm`echo $FILE | sed "s|$DIR||g"`
-      if [ -f $DES ]; then
-        umount $DES
-        mount -o bind $FILE $DES
-      fi
-    done
-  fi
-  if ! grep '/my_product' $AML/post-fs-data.sh\
-  && [ -d /my_product ]; then
-    for FILE in $FILES; do
-      DES=/my_product`echo $FILE | sed "s|$DIR||g"`
-      if [ -f $DES ]; then
-        umount $DES
-        mount -o bind $FILE $DES
-      fi
-    done
-  fi
-fi
-
-# wait
 until [ "`getprop sys.boot_completed`" == 1 ]; do
   sleep 10
 done
@@ -97,7 +82,7 @@ fi
 
 # grant
 PKG=com.motorola.motowaves
-if appops get $PKG > /dev/null 2>&1; then
+if appops get $PKG >/dev/null 2>&1; then
   pm grant --all-permissions $PKG
   if [ "$API" -ge 33 ]; then
     appops set $PKG ACCESS_RESTRICTED_SETTINGS allow
@@ -106,7 +91,7 @@ if appops get $PKG > /dev/null 2>&1; then
     appops set $PKG AUTO_REVOKE_PERMISSIONS_IF_UNUSED ignore
   fi
   PKGOPS=`appops get $PKG`
-  UID=`dumpsys package $PKG 2>/dev/null | grep -m 1 Id= | sed -e 's|    userId=||g' -e 's|    appId=||g'`
+  UID=`grep "^$PKG " /data/system/packages.list | awk '{print $2}'`
   if [ "$UID" ] && [ "$UID" -gt 9999 ]; then
     UIDOPS=`appops get --uid "$UID"`
   fi
@@ -114,12 +99,12 @@ fi
 
 # grant
 PKG=com.waves.maxxservice
-if appops get $PKG > /dev/null 2>&1; then
+if appops get $PKG >/dev/null 2>&1; then
   if [ "$API" -ge 30 ]; then
     appops set $PKG AUTO_REVOKE_PERMISSIONS_IF_UNUSED ignore
   fi
   PKGOPS=`appops get $PKG`
-  UID=`dumpsys package $PKG 2>/dev/null | grep -m 1 Id= | sed -e 's|    userId=||g' -e 's|    appId=||g'`
+  UID=`grep "^$PKG " /data/system/packages.list | awk '{print $2}'`
   if [ "$UID" ] && [ "$UID" -gt 9999 ]; then
     UIDOPS=`appops get --uid "$UID"`
   fi
